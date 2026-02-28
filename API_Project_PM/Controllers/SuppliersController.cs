@@ -5,7 +5,7 @@ namespace API_Project_PM.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class PartsController : ControllerBase
+    public class SuppliersController : ControllerBase
     {
 
     }

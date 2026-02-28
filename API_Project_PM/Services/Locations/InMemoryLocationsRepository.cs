@@ -4,24 +4,24 @@ namespace API_Project_PM.Services.Locations
 {
     public class InMemoryLocationsRepository : ILocationsRepository
     {
-        private static readonly List<Location> _locations = new()
-        {
-            new Location { Id = 1, Code = "S01-R01-SG01-P01-B01-T00-V01" },
-            new Location { Id = 2, Code = "S01-R01-SG01-P01-B02-T00-V01" },
-            new Location { Id = 3, Code = "S01-R02-SG01-P02-B03-T00-V01" },
-
-            // Overflow zone
-            new Location { Id = 4, Code = "S02-R01-SG01-P01-B01-T00-V00" },
-            new Location { Id = 5, Code = "S02-R01-SG02-P02-B04-T00-V00" }
-        };
+        private static List<Location> _locations = new()
+    {
+        new Location { Id = 1, Aisle = "A", Rack = "12", Shelf = "1", Box = "101"},
+        new Location { Id = 2, Aisle = "A", Rack = "12", Shelf = "2", Box = "102"},
+        new Location { Id = 3, Aisle = "B", Rack = "05", Shelf = "4", Box = "250"},
+        new Location { Id = 4, Aisle = "C", Rack = "22", Shelf = "1", Box = "005"},
+        new Location { Id = 5, Aisle = "D", Rack = "01", Shelf = "3", Box = "999"}
+    };
         public Task<IEnumerable<Location>> GetAll()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_locations.AsEnumerable());
         }
 
         public Task<Location?> GetById(int id)
         {
-            throw new NotImplementedException();
+            Location? result = _locations.FirstOrDefault(e => e.Id == id);
+
+            return Task.FromResult(result);
         }
     }
 }

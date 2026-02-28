@@ -1,4 +1,6 @@
 
+using API_Project_PM.Services.Locations;
+
 namespace API_Project_PM
 {
     public class Program
@@ -8,6 +10,8 @@ namespace API_Project_PM
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
