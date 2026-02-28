@@ -57,12 +57,14 @@ namespace API_Project_PM.Services.Parts
         };
         public Task<IEnumerable<Part>> GetAll()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_parts.AsEnumerable());
         }
 
         public Task<Part?> GetById(int id)
         {
-            throw new NotImplementedException();
+            Part? result = _parts.FirstOrDefault(e => e.Id == id);
+
+            return Task.FromResult(result);
         }
     }
 }

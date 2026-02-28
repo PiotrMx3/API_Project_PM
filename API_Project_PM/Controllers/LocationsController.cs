@@ -21,8 +21,10 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
         {
-            var result = await _locationsRepository.GetAll();
-            if (result.Count() == 0) return NotFound();
+            IEnumerable<Location> result = await _locationsRepository.GetAll();
+
+            if (!result.Any()) return NotFound();
+
             return Ok(result);
         }
 
@@ -33,7 +35,7 @@ namespace API_Project_PM.Controllers
 
         public async Task<ActionResult<Location>> GetLocationById(int id)
         {
-            var result = await _locationsRepository.GetById(id);
+            Location? result = await _locationsRepository.GetById(id);
 
             if (result is null) return NotFound();
 
