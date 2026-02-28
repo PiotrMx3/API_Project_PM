@@ -33,7 +33,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Part>>> GetAllParts(int id)
+        public async Task<ActionResult<Part>> GetAllParts(int id)
         {
             Part? result = await _partsRepository.GetById(id);
 

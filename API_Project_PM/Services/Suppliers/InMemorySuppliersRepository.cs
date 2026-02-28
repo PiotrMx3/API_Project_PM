@@ -50,12 +50,15 @@ namespace API_Project_PM.Services.Suppliers
 
         public Task<IEnumerable<Supplier>> GetAll()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_suppliers.AsEnumerable());
         }
 
         public Task<Supplier?> GetById(int id)
         {
-            throw new NotImplementedException();
+            Supplier? result = _suppliers.FirstOrDefault(e => e.Id == id);
+
+            return Task.FromResult(result);
+
         }
     }
 }
