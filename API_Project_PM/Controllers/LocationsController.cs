@@ -32,8 +32,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
-        public async Task<ActionResult<Location>> GetLocationById(int id)
+        public async Task<ActionResult<Location?>> GetLocationById(int id)
         {
             Location? result = await _locationsRepository.GetById(id);
 

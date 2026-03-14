@@ -57,7 +57,9 @@ namespace API_Project_PM.Services.Suppliers
         {
             Supplier? result = _suppliers.FirstOrDefault(e => e.Id == id);
 
-            return Task.FromResult(result);
+            if (result is null) return Task.FromResult<Supplier?>(null);
+
+            return Task.FromResult<Supplier?>(result);
 
         }
     }

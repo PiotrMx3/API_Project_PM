@@ -1,4 +1,6 @@
 
+using API_Project_PM.Models;
+using API_Project_PM.Services;
 using API_Project_PM.Services.Locations;
 using API_Project_PM.Services.Parts;
 using API_Project_PM.Services.Suppliers;
@@ -16,6 +18,8 @@ namespace API_Project_PM
             builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
             builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
             builder.Services.AddScoped<ISuppliersRepository, InMemorySuppliersRepository>();
+            builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
+            builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
 
 
             builder.Services.AddControllers();

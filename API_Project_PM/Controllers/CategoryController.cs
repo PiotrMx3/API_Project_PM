@@ -1,28 +1,28 @@
 ﻿using API_Project_PM.Models;
-using API_Project_PM.Services.Parts;
+using API_Project_PM.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Project_PM.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
-    public class PartsController : ControllerBase
+    public class CategoryController : ControllerBase
     {
-        private readonly IPartsRepository _partsRepository;
 
-        public PartsController(IPartsRepository partsRepository)
+        private readonly ICategoryRepository _categoryRepository;
+
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            this._partsRepository = partsRepository;
+            this._categoryRepository = categoryRepository;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Part>>> GetAllParts()
+        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategories()
         {
-            IEnumerable<Part> result = await _partsRepository.GetAll();
+            IEnumerable<Category> result = await _categoryRepository.GetAll();
 
             if (!result.Any()) return NotFound();
 
@@ -33,14 +33,19 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Part?>> GetAllParts(int id)
+
+        public async Task<ActionResult<Category?>> GetCategoryById(int id)
         {
-            Part? result = await _partsRepository.GetById(id);
+            Category? result = await _categoryRepository.GetById(id);
 
             if (result is null) return NotFound();
 
             return Ok(result);
         }
+
+
+
+
 
     }
 }

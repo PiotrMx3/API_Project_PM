@@ -12,9 +12,9 @@ namespace API_Project_PM.Services.Parts
                 Sku = "SENS-TEMP-01",
                 Name = "Temperature Sensor PT100",
                 Price = 45.50m,
-                Quantity = 150,
                 SupplierId = 1,
                 LocationId = 1,
+                CategoryId = 1,
                 isSellItem = true,
                 AddInfo = "Fragile, handle with care"
             },
@@ -24,9 +24,9 @@ namespace API_Project_PM.Services.Parts
                 Sku = "MET-BRACKET-M4",
                 Name = "Steel Bracket M4",
                 Price = 2.15m,
-                Quantity = 5000,
                 SupplierId = 2,
                 LocationId = 3,
+                CategoryId = 2,
                 isSellItem = false,
                 AddInfo = "Heavy box"
             },
@@ -36,9 +36,9 @@ namespace API_Project_PM.Services.Parts
                 Sku = "ROB-ARM-AXIS1",
                 Name = "Robotic Arm Axis Motor",
                 Price = 850.00m,
-                Quantity = 12,
                 SupplierId = 3,
                 LocationId = 4,
+                CategoryId = 1,
                 isSellItem = true,
                 AddInfo = "Includes warranty card"
             },
@@ -48,9 +48,9 @@ namespace API_Project_PM.Services.Parts
                 Sku = "ELEC-CABLE-10M",
                 Name = "Copper Wire 10m",
                 Price = 15.99m,
-                Quantity = 320,
                 SupplierId = 4,
                 LocationId = 2,
+                CategoryId = 1,
                 isSellItem = true,
                 AddInfo = "Standard power cable"
             }
@@ -64,7 +64,10 @@ namespace API_Project_PM.Services.Parts
         {
             Part? result = _parts.FirstOrDefault(e => e.Id == id);
 
-            return Task.FromResult(result);
+            if (result is null) return Task.FromResult<Part?>(null);
+
+
+            return Task.FromResult<Part?>(result);
         }
     }
 }
