@@ -12,6 +12,7 @@ namespace API_Project_PM.Services.Parts
                 Sku = "SENS-TEMP-01",
                 Name = "Temperature Sensor PT100",
                 Price = 45.50m,
+                Unit = "stuks",
                 SupplierId = 1,
                 LocationId = 1,
                 CategoryId = 1,
@@ -24,6 +25,7 @@ namespace API_Project_PM.Services.Parts
                 Sku = "MET-BRACKET-M4",
                 Name = "Steel Bracket M4",
                 Price = 2.15m,
+                Unit = "stuks",
                 SupplierId = 2,
                 LocationId = 3,
                 CategoryId = 2,
@@ -36,6 +38,7 @@ namespace API_Project_PM.Services.Parts
                 Sku = "ROB-ARM-AXIS1",
                 Name = "Robotic Arm Axis Motor",
                 Price = 850.00m,
+                Unit = "stuks",
                 SupplierId = 3,
                 LocationId = 4,
                 CategoryId = 1,
@@ -45,22 +48,34 @@ namespace API_Project_PM.Services.Parts
             new Part
             {
                 Id = 1004,
-                Sku = "ELEC-CABLE-10M",
-                Name = "Copper Wire 10m",
+                Sku = "ELEC-CABLE-3G2-5mm2",
+                Name = "Copper Wire H07RN-F 3G2.5mm",
                 Price = 15.99m,
                 SupplierId = 4,
                 LocationId = 2,
+                Unit = "m",
                 CategoryId = 1,
                 isSellItem = true,
                 AddInfo = "Standard power cable"
             }
         };
-        public Task<IEnumerable<Part>> GetAll()
+        public Task CreatePart(Part item)
+        {
+            var id = _parts.LastOrDefault()?.Id ?? 0;
+
+            item.Id = id + 1;
+
+            _parts.Add(item);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<IEnumerable<Part>> GetAllParts()
         {
             return Task.FromResult(_parts.AsEnumerable());
         }
 
-        public Task<Part?> GetById(int id)
+        public Task<Part?> GetPartById(int id)
         {
             Part? result = _parts.FirstOrDefault(e => e.Id == id);
 

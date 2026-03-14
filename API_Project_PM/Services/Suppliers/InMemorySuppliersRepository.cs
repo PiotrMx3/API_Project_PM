@@ -48,12 +48,24 @@ namespace API_Project_PM.Services.Suppliers
             }
         };
 
-        public Task<IEnumerable<Supplier>> GetAll()
+
+        public Task CreateSupplier(Supplier item)
+        {
+            var id = _suppliers.LastOrDefault()?.Id ?? 0;
+
+            item.Id = id + 1;
+
+            _suppliers.Add(item);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<IEnumerable<Supplier>> GetAllSuppliers()
         {
             return Task.FromResult(_suppliers.AsEnumerable());
         }
 
-        public Task<Supplier?> GetById(int id)
+        public Task<Supplier?> GetSupplierById(int id)
         {
             Supplier? result = _suppliers.FirstOrDefault(e => e.Id == id);
 

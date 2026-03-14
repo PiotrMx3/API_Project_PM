@@ -1,4 +1,5 @@
 ﻿using API_Project_PM.Models;
+using API_Project_PM.Services.Parts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Project_PM.Controllers
@@ -23,7 +24,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<StockMovement>>> GetAllParts()
         {
-            IEnumerable<StockMovement> result = await _stockMovementRepository.GetAll();
+            IEnumerable<StockMovement> result = await _stockMovementRepository.GetAllStockMovements();
 
             if (!result.Any()) return NotFound();
 
@@ -34,13 +35,28 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<StockMovement?>> GetAllParts(int id)
+        public async Task<ActionResult<StockMovement?>> GetPartById(int id)
         {
-            StockMovement? result = await _stockMovementRepository.GetById(id);
+            StockMovement? result = await _stockMovementRepository.GetStockMovementById(id);
 
             if (result is null) return NotFound();
 
             return Ok(result);
+        }
+
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+        public async Task<ActionResult> CreateStockMovement(StockMovement item)
+        {
+            if (item is null) return BadRequest();
+
+            await _stockMovementRepository.CreateStockMovement(item);
+
+            return CreatedAtAction(nameof(GetPartById), new { id = item.Id }, item);
         }
 
     }

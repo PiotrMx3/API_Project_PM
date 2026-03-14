@@ -6,6 +6,7 @@
         public string Sku { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public decimal Price { get; set; }
+        public string Unit { get; set; } = string.Empty;
         public int SupplierId { get; set; }
         public int LocationId { get; set; }
         public int CategoryId { get; set; }

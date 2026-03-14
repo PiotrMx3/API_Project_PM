@@ -4,8 +4,9 @@ namespace API_Project_PM.Services
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAll();
-        Task<Category?> GetById(int id);
+        Task<IEnumerable<Category>> GetAllCategories();
+        Task<Category?> GetCategoryById(int id);
+        Task CreateCategory(Category item);
     }
 }
 

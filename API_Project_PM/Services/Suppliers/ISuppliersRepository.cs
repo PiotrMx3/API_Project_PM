@@ -4,7 +4,9 @@ namespace API_Project_PM.Services.Suppliers
 {
     public interface ISuppliersRepository
     {
-        Task<IEnumerable<Supplier>> GetAll();
-        Task<Supplier?> GetById(int id);
+        Task<IEnumerable<Supplier>> GetAllSuppliers();
+        Task<Supplier?> GetSupplierById(int id);
+        Task CreateSupplier(Supplier item);
+
     }
 }

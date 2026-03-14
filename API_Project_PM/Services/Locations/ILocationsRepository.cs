@@ -4,7 +4,9 @@ namespace API_Project_PM.Services.Locations
 {
     public interface ILocationsRepository
     {
-        Task<IEnumerable<Location>> GetAll();
-        Task<Location?> GetById(int id);
+        Task<IEnumerable<Location>> GetAllLocations();
+        Task<Location?> GetLocationById(int id);
+        Task CreateLocation(Location item);
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using API_Project_PM.Models;
+using API_Project_PM.Services;
 using API_Project_PM.Services.Locations;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
         {
-            IEnumerable<Location> result = await _locationsRepository.GetAll();
+            IEnumerable<Location> result = await _locationsRepository.GetAllLocations();
 
             if (!result.Any()) return NotFound();
 
@@ -34,11 +35,25 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Location?>> GetLocationById(int id)
         {
-            Location? result = await _locationsRepository.GetById(id);
+            Location? result = await _locationsRepository.GetLocationById(id);
 
             if (result is null) return NotFound();
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+        public async Task<ActionResult> CreateLocation(Location item)
+        {
+            if (item is null) return BadRequest();
+
+            await _locationsRepository.CreateLocation(item);
+
+            return CreatedAtAction(nameof(GetLocationById), new { id = item.Id }, item);
         }
     }
 }

@@ -2,7 +2,9 @@
 {
     public interface IStockMovementRepository
     {
-        Task<IEnumerable<StockMovement>> GetAll();
-        Task<StockMovement?> GetById(int id);
+        Task<IEnumerable<StockMovement>> GetAllStockMovements();
+        Task<StockMovement?> GetStockMovementById(int id);
+        Task CreateStockMovement(StockMovement item);
+
     }
 }
