@@ -1,11 +1,12 @@
+using API_Minimal_Project_PM.Services.Locations;
+using API_Minimal_Project_PM.Services.Categories;
+using API_Minimal_Project_PM.Services.Parts;
+using API_Minimal_Project_PM.Services.Suppliers;
+using API_Minimal_Project_PM.Services.StockMovements;
+using API_Minimal_Project_PM.Models;
+using API_Minimal_Project_PM.Eindpoints;
 
-using API_Project_PM.Models;
-using API_Project_PM.Services.Categories;
-using API_Project_PM.Services.Locations;
-using API_Project_PM.Services.Parts;
-using API_Project_PM.Services.Suppliers;
-
-namespace API_Project_PM
+namespace API_Minimal_Project_PM
 {
     public class Program
     {
@@ -14,6 +15,8 @@ namespace API_Project_PM
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddAuthorization();
+
 
             builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
             builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
@@ -21,8 +24,6 @@ namespace API_Project_PM
             builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
             builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
 
-
-            builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -40,8 +41,7 @@ namespace API_Project_PM
 
             app.UseAuthorization();
 
-
-            app.MapControllers();
+            app.MapCategoryEndpoints();
 
             app.Run();
         }

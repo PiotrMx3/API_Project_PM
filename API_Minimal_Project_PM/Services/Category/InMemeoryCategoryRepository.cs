@@ -1,6 +1,6 @@
-﻿using API_Project_PM.Models;
+﻿using API_Minimal_Project_PM.Models;
 
-namespace API_Project_PM.Services
+namespace API_Minimal_Project_PM.Services.Categories
 {
     public class InMemeoryCategoryRepository : ICategoryRepository
     {
