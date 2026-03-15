@@ -66,7 +66,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateLocation(int id, Supplier item)
+        public async Task<ActionResult> UpdateSupplier(int id, Supplier item)
         {
 
             if (item is null || id != item.Id) return BadRequest();
@@ -83,7 +83,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> DeleteLocation(int id)
+        public async Task<ActionResult> DeleteSupplier(int id)
         {
 
             bool existing = await _suppliersRepository.DeleteSupplier(id);
