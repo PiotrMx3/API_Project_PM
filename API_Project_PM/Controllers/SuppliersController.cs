@@ -1,4 +1,5 @@
 ﻿using API_Project_PM.Models;
+using API_Project_PM.Services.Locations;
 using API_Project_PM.Services.Suppliers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace API_Project_PM.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -58,6 +59,38 @@ namespace API_Project_PM.Controllers
             await _suppliersRepository.CreateSupplier(item);
 
             return CreatedAtAction(nameof(GetSupplierById), new { id = item.Id }, item);
+        }
+
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpdateLocation(int id, Supplier item)
+        {
+
+            if (item is null || id != item.Id) return BadRequest();
+            bool existing = await _suppliersRepository.UpdateSupplier(id, item);
+
+            if (!existing) return NotFound();
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteLocation(int id)
+        {
+
+            bool existing = await _suppliersRepository.DeleteSupplier(id);
+
+            if (!existing) return NotFound();
+
+            return NoContent();
         }
 
     }

@@ -7,6 +7,8 @@ namespace API_Project_PM.Services
         Task<IEnumerable<Category>> GetAllCategories();
         Task<Category?> GetCategoryById(int id);
         Task CreateCategory(Category item);
+        Task<bool> UpdateCategory(int id, Category item);
+        Task<bool> DeleteCategory(int id);
     }
 }
 

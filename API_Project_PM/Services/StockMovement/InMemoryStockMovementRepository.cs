@@ -21,6 +21,7 @@ namespace API_Project_PM.Services
             return Task.CompletedTask;
         }
 
+
         public Task<IEnumerable<StockMovement>> GetAllStockMovements()
         {
             return Task.FromResult<IEnumerable<StockMovement>>(_stockMovements);
@@ -33,5 +34,6 @@ namespace API_Project_PM.Services
 
             return Task.FromResult<StockMovement?>(result);
         }
+
     }
 }

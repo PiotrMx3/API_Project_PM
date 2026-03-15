@@ -24,6 +24,26 @@ namespace API_Project_PM.Services.Locations
             return Task.CompletedTask;
         }
 
+        public Task<bool> DeleteLocation(int id)
+        {
+            Location? existing = _locations.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+            _locations.Remove(existing);
+
+            return Task.FromResult(true);
+        }
+        public Task<bool> UpdateLocation(int id, Location item)
+        {
+            Location? existing = _locations.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            existing.Zone = item.Zone;
+            existing.Rack = item.Rack;
+            existing.Shelf = item.Shelf;
+            existing.Box = item.Box;
+
+            return Task.FromResult(true);
+        }
 
         public Task<IEnumerable<Location>> GetAllLocations()
         {
@@ -38,5 +58,6 @@ namespace API_Project_PM.Services.Locations
 
             return Task.FromResult<Location?>(result);
         }
+
     }
 }

@@ -7,6 +7,8 @@ namespace API_Project_PM.Services.Parts
         Task<IEnumerable<Part>> GetAllParts();
         Task<Part?> GetPartById(int id);
         Task CreatePart(Part item);
+        Task<bool> UpdatePart(int id, Part item);
+        Task<bool> DeletePart(int id);
 
     }
 }

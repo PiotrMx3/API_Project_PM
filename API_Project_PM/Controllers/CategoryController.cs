@@ -33,7 +33,6 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         public async Task<ActionResult<Category?>> GetCategoryById(int id)
         {
             Category? result = await _categoryRepository.GetCategoryById(id);
@@ -55,9 +54,41 @@ namespace API_Project_PM.Controllers
 
             await _categoryRepository.CreateCategory(item);
 
-            return CreatedAtAction(nameof(GetCategoryById), new {id = item.Id }, item);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = item.Id }, item);
         }
 
 
+
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpdateCategory(int id, Category item)
+        {
+
+            if (item is null || id != item.Id) return BadRequest();
+
+            bool updated = await _categoryRepository.UpdateCategory(id, item);
+
+            if (!updated) return NotFound();
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+        public async Task<ActionResult> DeleteCategory(int id)
+        {
+            bool deleted = await _categoryRepository.DeleteCategory(id);
+
+            if (!deleted) return NotFound();
+
+            return NoContent();
+        }
     }
 }

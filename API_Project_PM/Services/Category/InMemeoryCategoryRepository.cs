@@ -24,6 +24,25 @@ namespace API_Project_PM.Services
             return Task.CompletedTask;
         }
 
+        public Task<bool> DeleteCategory(int id)
+        {
+            Category? existing = _categories.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            _categories.Remove(existing);
+
+            return Task.FromResult(true);
+        }
+        public Task<bool> UpdateCategory(int id, Category item)
+        {
+            Category? existing = _categories.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            existing.Name = item.Name;
+            return Task.FromResult(true);
+
+        }
+
         public Task<IEnumerable<Category>> GetAllCategories()
         {
             return Task.FromResult(_categories.AsEnumerable());
@@ -37,5 +56,6 @@ namespace API_Project_PM.Services
 
             return Task.FromResult<Category?>(result);
         }
+
     }
 }

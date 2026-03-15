@@ -7,6 +7,8 @@ namespace API_Project_PM.Services.Suppliers
         Task<IEnumerable<Supplier>> GetAllSuppliers();
         Task<Supplier?> GetSupplierById(int id);
         Task CreateSupplier(Supplier item);
+        Task<bool> UpdateSupplier(int id, Supplier item);
+        Task<bool> DeleteSupplier(int id);
 
     }
 }

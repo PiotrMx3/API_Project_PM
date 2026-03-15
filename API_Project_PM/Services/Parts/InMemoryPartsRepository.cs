@@ -61,6 +61,11 @@ namespace API_Project_PM.Services.Parts
         };
         public Task CreatePart(Part item)
         {
+            if(_parts.Any(p => p.Sku.Equals(item.Sku, StringComparison.OrdinalIgnoreCase))) {
+
+                throw new InvalidOperationException("Deze onderdeel bestaat al");
+            }
+
             var id = _parts.LastOrDefault()?.Id ?? 0;
 
             item.Id = id + 1;
@@ -68,6 +73,32 @@ namespace API_Project_PM.Services.Parts
             _parts.Add(item);
 
             return Task.CompletedTask;
+        }
+
+        public Task<bool> DeletePart(int id)
+        {
+            Part? existing = _parts.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            _parts.Remove(existing);
+
+            return Task.FromResult(true);
+        }
+        public Task<bool> UpdatePart(int id, Part item)
+        {
+            Part? existing = _parts.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            existing.Name = item.Name;
+            existing.Price = item.Price;
+            existing.Unit = item.Unit;
+            existing.SupplierId = item.SupplierId;
+            existing.LocationId = item.LocationId;
+            existing.CategoryId = item.CategoryId;
+            existing.isSellItem = item.isSellItem;
+            existing.AddInfo = item.AddInfo;
+
+            return Task.FromResult(true);
         }
 
         public Task<IEnumerable<Part>> GetAllParts()
@@ -84,5 +115,6 @@ namespace API_Project_PM.Services.Parts
 
             return Task.FromResult<Part?>(result);
         }
+
     }
 }

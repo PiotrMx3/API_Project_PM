@@ -29,7 +29,7 @@ namespace API_Project_PM.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -46,7 +46,6 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         public async Task<ActionResult> CreateLocation(Location item)
         {
             if (item is null) return BadRequest();
@@ -55,5 +54,40 @@ namespace API_Project_PM.Controllers
 
             return CreatedAtAction(nameof(GetLocationById), new { id = item.Id }, item);
         }
+
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpdateLocation(int id, Location item)
+        {
+
+            if (item is null || id != item.Id) return BadRequest();
+            bool existing = await _locationsRepository.UpdateLocation(id, item);
+
+            if (!existing) return NotFound();
+
+            return NoContent();
+        }
+
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteLocation(int id)
+        {
+
+            bool existing = await _locationsRepository.DeleteLocation(id);
+
+            if (!existing) return NotFound();
+
+            return NoContent();
+        }
+
+
+
     }
 }

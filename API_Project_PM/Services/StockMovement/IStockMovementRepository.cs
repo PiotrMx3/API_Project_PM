@@ -6,5 +6,6 @@
         Task<StockMovement?> GetStockMovementById(int id);
         Task CreateStockMovement(StockMovement item);
 
+
     }
 }

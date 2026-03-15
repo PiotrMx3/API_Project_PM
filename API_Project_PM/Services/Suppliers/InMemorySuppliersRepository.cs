@@ -1,4 +1,5 @@
 ﻿using API_Project_PM.Models;
+using System.Diagnostics.Metrics;
 
 namespace API_Project_PM.Services.Suppliers
 {
@@ -60,6 +61,30 @@ namespace API_Project_PM.Services.Suppliers
             return Task.CompletedTask;
         }
 
+        public Task<bool> DeleteSupplier(int id)
+        {
+            Supplier? existing = _suppliers.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            _suppliers.Remove(existing);
+            return Task.FromResult(true);
+        }
+        public Task<bool> UpdateSupplier(int id, Supplier item)
+        {
+            Supplier? existing = _suppliers.FirstOrDefault(i => i.Id == id);
+            if (existing is null) return Task.FromResult(false);
+
+            existing.Name = item.Name;
+            existing.VatNumber = item.VatNumber;
+            existing.ContactEmail = item.ContactEmail;
+            existing.Country = item.Country;
+            existing.PaymentTerms = item.PaymentTerms;
+            existing.TaxRate = item.TaxRate;
+            existing.IsActive = item.IsActive;
+
+            return Task.FromResult(true);
+        }
+
         public Task<IEnumerable<Supplier>> GetAllSuppliers()
         {
             return Task.FromResult(_suppliers.AsEnumerable());
@@ -74,5 +99,6 @@ namespace API_Project_PM.Services.Suppliers
             return Task.FromResult<Supplier?>(result);
 
         }
+
     }
 }
