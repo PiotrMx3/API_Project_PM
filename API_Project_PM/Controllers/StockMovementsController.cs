@@ -1,4 +1,4 @@
-﻿using API_Project_PM.Models;
+﻿using API_Project_PM.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Project_PM.Controllers

@@ -1,9 +1,11 @@
 
-using API_Project_PM.Models;
-using API_Project_PM.Services.Categories;
-using API_Project_PM.Services.Locations;
-using API_Project_PM.Services.Parts;
-using API_Project_PM.Services.Suppliers;
+using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Categories;
+using API_Project_PM.Core.Services.Locations;
+using API_Project_PM.Core.Services.Parts;
+using API_Project_PM.Core.Services.Categories;
+using API_Project_PM.Core.Services.Suppliers;
+using API_Project_PM.Core.Services;
 
 namespace API_Project_PM
 {
@@ -21,7 +23,7 @@ namespace API_Project_PM
             builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
             builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
 
-
+            builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

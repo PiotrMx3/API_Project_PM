@@ -1,5 +1,5 @@
-﻿using API_Project_PM.Models;
-using API_Project_PM.Services.Suppliers;
+﻿using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Services.Suppliers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Project_PM.Controllers

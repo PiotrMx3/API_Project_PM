@@ -1,5 +1,6 @@
-﻿using API_Minimal_Project_PM.Models;
-using API_Minimal_Project_PM.Services.Categories;
+﻿using API_Project_PM.Core.Categories;
+using API_Project_PM.Core.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace API_Minimal_Project_PM.Eindpoints
 {
@@ -10,68 +11,57 @@ namespace API_Minimal_Project_PM.Eindpoints
             var categoryGroup = app.MapGroup("/api/Category").WithTags("Category");
 
             // 1. GET: GetAllCategories
-            categoryGroup.MapGet("/", async (ICategoryRepository repo) =>
+            categoryGroup.MapGet("/", async Task<Results<NotFound, Ok<IEnumerable<Category>>>> (ICategoryRepository repo) =>
             {
                 var result = await repo.GetAllCategories();
-                if (!result.Any()) return Results.NotFound();
+                if (!result.Any()) return TypedResults.NotFound();
 
-                return Results.Ok(result);
+                return TypedResults.Ok(result);
             })
-            .Produces<IEnumerable<Category>>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
 
             // 2. GET: GetCategoryById
-            categoryGroup.MapGet("/{id:int}", async (int id, ICategoryRepository repo) =>
+            categoryGroup.MapGet("/{id:int}", async Task<Results<NotFound, Ok<Category>>> (int id, ICategoryRepository repo) =>
             {
                 var result = await repo.GetCategoryById(id);
-                if (result is null) return Results.NotFound();
+                if (result is null) return TypedResults.NotFound();
 
-                return Results.Ok(result);
+                return TypedResults.Ok(result);
             })
             .WithName("GetCategoryById")
-            .Produces<Category>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
 
             // 3. POST: CreateCategory
-            categoryGroup.MapPost("/", async (Category item, ICategoryRepository repo) =>
+            categoryGroup.MapPost("/", async Task<Results<BadRequest, CreatedAtRoute<Category>>> (Category item, ICategoryRepository repo) =>
             {
-                if (item is null) return Results.BadRequest();
+                if (item is null) return TypedResults.BadRequest();
 
                 await repo.CreateCategory(item);
 
-                return Results.CreatedAtRoute("GetCategoryById", new { id = item.Id }, item);
+                return TypedResults.CreatedAtRoute(item, "GetCategoryById", new { id = item.Id });
             })
-            .Produces<Category>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
 
             // 4. PUT: UpdateCategory
-            categoryGroup.MapPut("/{id:int}", async (int id, Category item, ICategoryRepository repo) =>
+            categoryGroup.MapPut("/{id:int}", async Task<Results<BadRequest, NotFound, NoContent>> (int id, Category item, ICategoryRepository repo) =>
             {
-                if (item is null || id != item.Id) return Results.BadRequest();
+                if (item is null || id != item.Id) return TypedResults.BadRequest();
 
                 bool updated = await repo.UpdateCategory(id, item);
-                if (!updated) return Results.NotFound();
+                if (!updated) return TypedResults.NotFound();
 
-                return Results.NoContent();
+                return TypedResults.NoContent();
             })
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
 
             // 5. DELETE: DeleteCategory
-            categoryGroup.MapDelete("/{id:int}", async (int id, ICategoryRepository repo) =>
+            categoryGroup.MapDelete("/{id:int}", async Task<Results<NotFound, NoContent>> (int id, ICategoryRepository repo) =>
             {
                 bool deleted = await repo.DeleteCategory(id);
-                if (!deleted) return Results.NotFound();
+                if (!deleted) return TypedResults.NotFound();
 
-                return Results.NoContent();
+                return TypedResults.NoContent();
             })
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError);
         }
 

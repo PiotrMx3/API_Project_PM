@@ -17,16 +17,17 @@ namespace API_Minimal_Project_PM
             // Add services to the container.
             builder.Services.AddAuthorization();
 
-
             builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
             builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
             builder.Services.AddScoped<ISuppliersRepository, InMemorySuppliersRepository>();
             builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
             builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
+            builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
 
             var app = builder.Build();
 
