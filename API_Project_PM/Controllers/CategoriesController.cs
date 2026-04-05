@@ -86,6 +86,7 @@ namespace API_Project_PM.Controllers
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
         public async Task<ActionResult> DeleteCategory(int id)
@@ -98,7 +99,7 @@ namespace API_Project_PM.Controllers
             }
             catch (DbUpdateException)
             {
-                return Conflict("Kan categorie niet verwijderen: er zijn onderdelen gekoppeld");
+                return Conflict(new { conflict = "Kan categorie niet verwijderen: er zijn onderdelen gekoppeld" });
             }
         }
     }
