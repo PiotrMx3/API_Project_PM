@@ -1,11 +1,13 @@
 
-using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Categories;
+using API_Project_PM.Core.Database;
+using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Services;
+using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
 using API_Project_PM.Core.Services.Parts;
-using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Suppliers;
-using API_Project_PM.Core.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM
 {
@@ -16,6 +18,10 @@ namespace API_Project_PM
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<AppDBContext>(options =>
+                options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+            );
 
             builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
             builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
