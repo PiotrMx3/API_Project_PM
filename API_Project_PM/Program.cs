@@ -23,11 +23,7 @@ namespace API_Project_PM
                 ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
             );
 
-            builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
-            builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
-            builder.Services.AddScoped<ISuppliersRepository, InMemorySuppliersRepository>();
-            builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
-            builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();

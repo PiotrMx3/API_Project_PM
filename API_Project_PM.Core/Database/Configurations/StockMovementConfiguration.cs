@@ -8,7 +8,7 @@ namespace API_Project_PM.Core.Database.Configurations
         public void Configure(EntityTypeBuilder<StockMovement> builder)
         {
             builder.ToTable("StockMovements", t =>
-                t.HasCheckConstraint("CK_StockMovements_Quantity", "[Quantity] >= 1"));
+                t.HasCheckConstraint("CK_StockMovements_Quantity", "Quantity >= 1"));
 
 
             builder.HasKey(sm => sm.Id);
@@ -19,10 +19,10 @@ namespace API_Project_PM.Core.Database.Configurations
 
             builder.Property(sm => sm.MovementDate)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("(UTC_TIMESTAMP())");
 
             builder.Property(sm => sm.TransferGroupId)
-                .HasDefaultValueSql("NEWID()");
+                .HasDefaultValueSql("(UUID())");
 
             builder.HasIndex(sm => sm.PartId)
                 .HasDatabaseName("IX_StockMovements_PartId");
@@ -30,6 +30,7 @@ namespace API_Project_PM.Core.Database.Configurations
             builder.HasIndex(sm => sm.MovementDate)
                 .HasDatabaseName("IX_StockMovements_MovementDate");
 
+            builder.HasQueryFilter(sm => !sm.Part.IsDeleted && !sm.Location.IsDeleted);
 
             builder.HasOne(sm => sm.Part)
                 .WithMany()

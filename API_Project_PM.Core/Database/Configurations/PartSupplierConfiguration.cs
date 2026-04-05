@@ -17,6 +17,8 @@ namespace API_Project_PM.Core.Database.Configurations
             builder.Property(ps => ps.SupplierPrice)
                 .HasColumnType("decimal(10,2)");
 
+            builder.HasQueryFilter(ps => !ps.Part.IsDeleted);
+
             builder.Property(ps => ps.IsPreferred)
                 .HasDefaultValue(false);
 
@@ -29,6 +31,7 @@ namespace API_Project_PM.Core.Database.Configurations
 
             builder.HasOne(ps => ps.Supplier)
                  .WithMany()
+                 .HasForeignKey(ps => ps.SupplierId)
                  //Can not remove supplier when PS existing
                  .OnDelete(DeleteBehavior.Restrict);
 

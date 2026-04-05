@@ -12,11 +12,13 @@ namespace API_Project_PM.Core.Database.Configurations
 
             builder.ToTable("StockItems", t =>
             {
-                t.HasCheckConstraint("CK_StockItems_Quantity", "[Quantity] >= 0");
-                t.HasCheckConstraint("CK_StockItems_Quantity_Max", "[Quantity] <= 100000");
+                t.HasCheckConstraint("CK_StockItems_Quantity", "Quantity >= 0");
+                t.HasCheckConstraint("CK_StockItems_Quantity_Max", "Quantity <= 100000");
             });
 
             builder.HasKey(si => si.Id);
+
+            builder.HasQueryFilter(si => !si.Part.IsDeleted && !si.Location.IsDeleted);
 
             builder.Property(si => si.Quantity)
                 .IsRequired()

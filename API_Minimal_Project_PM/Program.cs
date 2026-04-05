@@ -1,9 +1,3 @@
-using API_Minimal_Project_PM.Services.Locations;
-using API_Minimal_Project_PM.Services.Categories;
-using API_Minimal_Project_PM.Services.Parts;
-using API_Minimal_Project_PM.Services.Suppliers;
-using API_Minimal_Project_PM.Services.StockMovements;
-using API_Minimal_Project_PM.Models;
 using API_Minimal_Project_PM.Eindpoints;
 
 namespace API_Minimal_Project_PM
@@ -16,12 +10,6 @@ namespace API_Minimal_Project_PM
 
             // Add services to the container.
             builder.Services.AddAuthorization();
-
-            builder.Services.AddScoped<ILocationsRepository, InMemoryLocationsRepository>();
-            builder.Services.AddScoped<IPartsRepository, InMemoryPartsRepository>();
-            builder.Services.AddScoped<ISuppliersRepository, InMemorySuppliersRepository>();
-            builder.Services.AddScoped<ICategoryRepository, InMemeoryCategoryRepository>();
-            builder.Services.AddScoped<IStockMovementRepository, InMemoryStockMovementRepository>();
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

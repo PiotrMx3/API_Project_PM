@@ -4,11 +4,11 @@ namespace API_Project_PM.Core.Categories
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAllCategories();
-        Task<Category?> GetCategoryById(int id);
-        Task CreateCategory(Category item);
-        Task<bool> UpdateCategory(int id, Category item);
-        Task<bool> DeleteCategory(int id);
+        Task<IEnumerable<Category>> GetAllAsync();
+        Task<Category?> GetByIdAsync(int id);
+        Task<Category> CreateAsync(Category item);
+        Task<bool> UpdateAsync(int id, Category item);
+        Task<bool> DeleteAsync(int id);
     }
 }
 

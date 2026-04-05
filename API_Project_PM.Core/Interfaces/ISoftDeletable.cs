@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API_Project_PM.Core.Interfaces
 {
-    internal interface ISoftDeletable
+    public interface ISoftDeletable
     {
         bool IsDeleted { get; set; }
         DateTime? DeletedAt { get; set; }
