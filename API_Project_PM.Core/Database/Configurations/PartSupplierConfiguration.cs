@@ -27,7 +27,7 @@ namespace API_Project_PM.Core.Database.Configurations
                 .HasForeignKey(ps => ps.PartId)
 
                 // Removing Part remove PS records
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(ps => ps.Supplier)
                  .WithMany()
