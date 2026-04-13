@@ -23,6 +23,14 @@ namespace API_Project_PM
                 ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
             );
 
+            var autoMapperKey = builder.Configuration["AutoMapperSettings:LicenseKey"];
+
+            builder.Services.AddAutoMapper(cfg => 
+            {
+                cfg.LicenseKey = autoMapperKey;
+
+            }, AppDomain.CurrentDomain.GetAssemblies());
+
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);

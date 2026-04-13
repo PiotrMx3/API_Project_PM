@@ -1,6 +1,7 @@
 ﻿using API_Project_PM.Core.Categories;
-using API_Project_PM.Core.Database;
+using API_Project_PM.Core.DTOs.Categories;
 using API_Project_PM.Core.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,54 +13,70 @@ namespace API_Project_PM.Controllers
     {
 
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
 
-        public CategoriesController(ICategoryRepository categoryRepository)
+
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             this._categoryRepository = categoryRepository;
+            this._mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Category>>> GetAllCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategories()
         {
             IEnumerable<Category> result = await _categoryRepository.GetAllAsync();
 
-            if (!result.Any()) return NotFound();
+            if (!result.Any()) return Ok(Array.Empty<CategoryDto>());
 
-            return Ok(result);
+            IEnumerable<CategoryDto> response = _mapper.Map<IEnumerable<CategoryDto>>(result);
+
+            return Ok(response);
         }
-
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Category?>> GetCategoryById(int id)
+        public async Task<ActionResult<CategoryDto>> GetCategoryById(int id)
         {
+
+            if (id <= 0) return BadRequest();
+
+
             Category? result = await _categoryRepository.GetByIdAsync(id);
 
             if (result is null) return NotFound();
 
-            return Ok(result);
+            CategoryDto response = _mapper.Map<CategoryDto>(result);
+
+            return Ok(response);
         }
 
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> CreateCategory(Category item)
+        public async Task<ActionResult> CreateCategory(CreateCategoryDto dto)
         {
+            var entity = _mapper.Map<Category>(dto);
+
             try
             {
-                var created = await _categoryRepository.CreateAsync(item);
-                return CreatedAtAction(nameof(GetCategoryById), new { id = created.Id }, created);
+                var created = await _categoryRepository.CreateAsync(entity);
+
+                CategoryDto response = _mapper.Map<CategoryDto>(created);
+
+                return CreatedAtAction(nameof(GetCategoryById), new { id = response.Id }, response);
             }
             catch (DbUpdateException)
             {
-                return Conflict(new {conflict = "Categorie met deze naam bestaat al" } );
+                return Conflict(new { conflict = "Categorie met deze naam bestaat al" });
             }
         }
 
@@ -67,15 +84,16 @@ namespace API_Project_PM.Controllers
 
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateCategory(int id, Category item)
+        public async Task<ActionResult> UpdateCategory(int id, UpdateCategoryDto dto)
         {
 
-            if (item is null || id != item.Id) return BadRequest();
+            if (id <= 0) return BadRequest();
 
-            bool updated = await _categoryRepository.UpdateAsync(id, item);
+            var entity = _mapper.Map<Category>(dto);
+            bool updated = await _categoryRepository.UpdateAsync(id, entity);
 
             if (!updated) return NotFound();
 
@@ -87,10 +105,13 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
         public async Task<ActionResult> DeleteCategory(int id)
         {
+            if (id <= 0) return BadRequest();
+
             try
             {
                 var deleted = await _categoryRepository.DeleteAsync(id);
