@@ -29,12 +29,14 @@ namespace API_Project_PM.Core.Services.Categories
                 await _db.SaveChangesAsync();
                 return item;
         }
-        public async Task<bool> UpdateAsync(int id, Category item)
+        public async Task<bool> UpdateAsync(Category item)
         {
-            var result = await _db.Categories.FindAsync(id);
+            var result = await _db.Categories.FindAsync(item.Id);
             if (result is null) return false;
 
+
             _db.Entry(result).CurrentValues.SetValues(item);
+
             await _db.SaveChangesAsync();
 
             return true;

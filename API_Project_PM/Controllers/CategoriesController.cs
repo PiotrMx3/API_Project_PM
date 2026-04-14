@@ -93,7 +93,10 @@ namespace API_Project_PM.Controllers
             if (id <= 0) return BadRequest();
 
             var entity = _mapper.Map<Category>(dto);
-            bool updated = await _categoryRepository.UpdateAsync(id, entity);
+
+            entity.Id = id;
+
+            bool updated = await _categoryRepository.UpdateAsync(entity);
 
             if (!updated) return NotFound();
 
