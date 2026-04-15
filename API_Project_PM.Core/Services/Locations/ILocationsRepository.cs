@@ -4,11 +4,11 @@ namespace API_Project_PM.Core.Services.Locations
 {
     public interface ILocationsRepository
     {
-        Task<IEnumerable<Location>> GetAllLocations();
-        Task<Location?> GetLocationById(int id);
-        Task CreateLocation(Location item);
-        Task<bool> UpdateLocation(int id, Location item);
-        Task<bool> DeleteLocation(int id);
+        Task<IEnumerable<Location>> GetAllAsync();
+        Task<Location?> GetByIdAsync(int id);
+        Task<Location> CreateAsync(Location item);
+        Task<bool> UpdateAsync(Location item);
+        Task<bool> DeleteAsync(int id);
 
     }
 }

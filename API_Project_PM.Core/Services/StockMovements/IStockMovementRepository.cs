@@ -1,4 +1,6 @@
-﻿namespace API_Project_PM.Core.Models
+﻿using API_Project_PM.Core.Models;
+
+namespace API_Project_PM.Core.Services.StockMovements
 {
     public interface IStockMovementRepository
     {

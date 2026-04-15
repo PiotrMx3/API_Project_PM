@@ -1,5 +1,4 @@
 
-using API_Project_PM.Core.Categories;
 using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services;
@@ -32,6 +31,7 @@ namespace API_Project_PM
             }, AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
+            builder.Services.AddScoped<ILocationsRepository, LocationService>();
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();

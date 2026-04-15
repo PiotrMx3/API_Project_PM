@@ -1,6 +1,6 @@
 ﻿using API_Project_PM.Core.Models;
 
-namespace API_Project_PM.Core.Categories
+namespace API_Project_PM.Core.Services.Categories
 {
     public interface ICategoryRepository
     {

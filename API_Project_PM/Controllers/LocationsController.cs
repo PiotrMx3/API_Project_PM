@@ -1,6 +1,11 @@
-﻿using API_Project_PM.Core.Models;
+﻿using API_Project_PM.Core.Database;
+using API_Project_PM.Core.DTOs.Locations;
+using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Controllers
 {
@@ -8,50 +13,71 @@ namespace API_Project_PM.Controllers
     [Route("api/[controller]")]
     public class LocationsController : ControllerBase
     {
-        private readonly ILocationsRepository _locationsRepository;
-        public LocationsController(ILocationsRepository locationRepository)
+        private readonly ILocationsRepository _catergoryRepository;
+        private readonly IMapper _mapper;
+
+        public LocationsController(ILocationsRepository catergory, IMapper mapper)
         {
-            this._locationsRepository = locationRepository;
+            this._catergoryRepository = catergory;
+            this._mapper = mapper;
         }
 
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Location>>> GetAllLocations()
+        public async Task<ActionResult<IEnumerable<LocationDto>>> GetAllLocations()
         {
-            IEnumerable<Location> result = await _locationsRepository.GetAllLocations();
+            IEnumerable<Location> result = await _catergoryRepository.GetAllAsync();
 
-            if (!result.Any()) return NotFound();
+            //if (!result.Any()) return Ok(new List<LocationDto>[] { });
 
-            return Ok(result);
+            if (!result.Any()) return Ok(Array.Empty<List<LocationDto>>());
+
+            IEnumerable<LocationDto> repsone = _mapper.Map<List<LocationDto>>(result);
+
+            return Ok(repsone);
         }
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Location?>> GetLocationById(int id)
+        public async Task<ActionResult<LocationDto>> GetLocationById(int id)
         {
-            Location? result = await _locationsRepository.GetLocationById(id);
+            if (id <= 0) return BadRequest();
+
+            Location? result = await _catergoryRepository.GetByIdAsync(id);
 
             if (result is null) return NotFound();
 
-            return Ok(result);
+            LocationDto response = _mapper.Map<LocationDto>(result);
+
+            return Ok(response);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> CreateLocation(Location item)
+        public async Task<ActionResult> CreateLocation(CreateLocationDto item)
         {
-            if (item is null) return BadRequest();
+            Location entity = _mapper.Map<Location>(item);
 
-            await _locationsRepository.CreateLocation(item);
+            try
+            {
+                Location result = await _catergoryRepository.CreateAsync(entity);
 
-            return CreatedAtAction(nameof(GetLocationById), new { id = item.Id }, item);
+                return CreatedAtAction(nameof(GetLocationById), new { id = entity.Id }, entity);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict(new { conflict = "Locatie bestaat al" });
+            }
+
         }
 
         [HttpPut("{id:int}")]
@@ -59,11 +85,16 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateLocation(int id, Location item)
+        public async Task<ActionResult> UpdateLocation(int id, UpdateLocationDto item)
         {
 
-            if (item is null || id != item.Id) return BadRequest();
-            bool existing = await _locationsRepository.UpdateLocation(id, item);
+            if (id <= 0) return BadRequest();
+
+            var entity = _mapper.Map<Location>(item);
+
+            entity.Id = id;
+
+            bool existing = await _catergoryRepository.UpdateAsync(entity);
 
             if (!existing) return NotFound();
 
@@ -79,7 +110,9 @@ namespace API_Project_PM.Controllers
         public async Task<ActionResult> DeleteLocation(int id)
         {
 
-            bool existing = await _locationsRepository.DeleteLocation(id);
+            if (id <= 0) return BadRequest();
+
+            bool existing = await _catergoryRepository.DeleteAsync(id);
 
             if (!existing) return NotFound();
 

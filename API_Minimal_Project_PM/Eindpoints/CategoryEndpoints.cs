@@ -1,4 +1,4 @@
-﻿using API_Project_PM.Core.Categories;
+﻿using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 
