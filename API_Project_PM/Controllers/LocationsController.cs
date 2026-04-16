@@ -1,7 +1,5 @@
-﻿using API_Project_PM.Core.Database;
-using API_Project_PM.Core.DTOs.Locations;
+﻿using API_Project_PM.Core.DTOs.Locations;
 using API_Project_PM.Core.Models;
-using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +9,14 @@ namespace API_Project_PM.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LocationController : ControllerBase
+    public class LocationsController : ControllerBase
     {
-        private readonly ILocationRepository _catergoryRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IMapper _mapper;
 
-        public LocationController(ILocationRepository catergory, IMapper mapper)
+        public LocationsController(ILocationRepository catergory, IMapper mapper)
         {
-            this._catergoryRepository = catergory;
+            this._locationRepository = catergory;
             this._mapper = mapper;
         }
 
@@ -28,11 +26,11 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<LocationDto>>> GetAllLocations()
         {
-            IEnumerable<Location> result = await _catergoryRepository.GetAllAsync();
+            IEnumerable<Location> result = await _locationRepository.GetAllAsync();
 
             //if (!result.Any()) return Ok(new List<LocationDto>[] { });
 
-            if (!result.Any()) return Ok(Array.Empty<List<LocationDto>>());
+            if (!result.Any()) return Ok(Array.Empty<LocationDto>());
 
             IEnumerable<LocationDto> repsone = _mapper.Map<List<LocationDto>>(result);
 
@@ -48,7 +46,7 @@ namespace API_Project_PM.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            Location? result = await _catergoryRepository.GetByIdAsync(id);
+            Location? result = await _locationRepository.GetByIdAsync(id);
 
             if (result is null) return NotFound();
 
@@ -69,7 +67,7 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                Location created = await _catergoryRepository.CreateAsync(entity);
+                Location created = await _locationRepository.CreateAsync(entity);
 
                 LocationDto response = _mapper.Map<LocationDto>(created);
 
@@ -96,7 +94,7 @@ namespace API_Project_PM.Controllers
 
             entity.Id = id;
 
-            bool existing = await _catergoryRepository.UpdateAsync(entity);
+            bool existing = await _locationRepository.UpdateAsync(entity);
 
             if (!existing) return NotFound();
 
@@ -114,7 +112,7 @@ namespace API_Project_PM.Controllers
 
             if (id <= 0) return BadRequest();
 
-            bool existing = await _catergoryRepository.DeleteAsync(id);
+            bool existing = await _locationRepository.DeleteAsync(id);
 
             if (!existing) return NotFound();
 

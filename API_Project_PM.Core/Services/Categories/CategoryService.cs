@@ -1,5 +1,4 @@
-﻿using API_Project_PM.Core.Services.Categories;
-using API_Project_PM.Core.Database;
+﻿using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,10 +49,10 @@ namespace API_Project_PM.Core.Services.Categories
             if (result is null) return false;
 
             _db.Categories.Remove(result);
+
             await _db.SaveChangesAsync();
 
             return true;
-
 
         }
 

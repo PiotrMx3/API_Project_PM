@@ -7,12 +7,12 @@ namespace API_Project_PM.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class SupplierController : ControllerBase
+    public class SuppliersController : ControllerBase
     {
         private readonly ISupplierRepository _suppliersRepository;
 
 
-        public SupplierController(ISupplierRepository suppliersRepository)
+        public SuppliersController(ISupplierRepository suppliersRepository)
         {
             this._suppliersRepository = suppliersRepository;
         }

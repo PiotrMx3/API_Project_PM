@@ -7,11 +7,11 @@ namespace API_Project_PM.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class PartController : ControllerBase
+    public class PartsController : ControllerBase
     {
         private readonly IPartRepository _partsRepository;
 
-        public PartController(IPartRepository partsRepository)
+        public PartsController(IPartRepository partsRepository)
         {
             this._partsRepository = partsRepository;
         }

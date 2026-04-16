@@ -30,7 +30,10 @@ namespace API_Project_PM.Core.Services.Locations
 
             if (result is null) return false;
 
-            _db.Remove(result);
+            result.IsDeleted = true;
+
+            await _db.SaveChangesAsync();
+
             return true;
         }
 

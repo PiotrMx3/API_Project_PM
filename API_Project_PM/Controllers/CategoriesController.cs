@@ -9,7 +9,7 @@ namespace API_Project_PM.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CategorieController : ControllerBase
+    public class CategoriesController : ControllerBase
     {
 
         private readonly ICategoryRepository _categoryRepository;
@@ -17,7 +17,7 @@ namespace API_Project_PM.Controllers
 
 
 
-        public CategorieController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             this._categoryRepository = categoryRepository;
             this._mapper = mapper;
