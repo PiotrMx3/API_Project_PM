@@ -2,7 +2,7 @@
 
 namespace API_Project_PM.Core.Services.Suppliers
 {
-    public interface ISuppliersRepository
+    public interface ISupplierRepository
     {
         Task<IEnumerable<Supplier>> GetAllSuppliers();
         Task<Supplier?> GetSupplierById(int id);

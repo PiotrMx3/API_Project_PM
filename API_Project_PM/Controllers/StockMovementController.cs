@@ -6,12 +6,12 @@ namespace API_Project_PM.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StockMovementsController : ControllerBase
+    public class StockMovementController : ControllerBase
     {
 
         private readonly IStockMovementRepository _stockMovementRepository;
 
-        public StockMovementsController(IStockMovementRepository stockMovementRepository)
+        public StockMovementController(IStockMovementRepository stockMovementRepository)
         {
             this._stockMovementRepository = stockMovementRepository;
         }

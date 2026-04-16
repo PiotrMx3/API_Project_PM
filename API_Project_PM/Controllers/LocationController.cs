@@ -11,12 +11,12 @@ namespace API_Project_PM.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LocationsController : ControllerBase
+    public class LocationController : ControllerBase
     {
-        private readonly ILocationsRepository _catergoryRepository;
+        private readonly ILocationRepository _catergoryRepository;
         private readonly IMapper _mapper;
 
-        public LocationsController(ILocationsRepository catergory, IMapper mapper)
+        public LocationController(ILocationRepository catergory, IMapper mapper)
         {
             this._catergoryRepository = catergory;
             this._mapper = mapper;
@@ -69,9 +69,11 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                Location result = await _catergoryRepository.CreateAsync(entity);
+                Location created = await _catergoryRepository.CreateAsync(entity);
 
-                return CreatedAtAction(nameof(GetLocationById), new { id = entity.Id }, entity);
+                LocationDto response = _mapper.Map<LocationDto>(created);
+
+                return CreatedAtAction(nameof(GetLocationById), new { id = response.Id }, response);
             }
             catch (DbUpdateException)
             {

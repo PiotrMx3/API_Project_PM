@@ -31,7 +31,7 @@ namespace API_Project_PM
             }, AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
-            builder.Services.AddScoped<ILocationsRepository, LocationService>();
+            builder.Services.AddScoped<ILocationRepository, LocationService>();
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();

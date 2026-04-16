@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Core.Services.Locations
 {
-    public class LocationService : ILocationsRepository
+    public class LocationService : ILocationRepository
     {
         private readonly AppDBContext _db;
 
@@ -19,6 +19,7 @@ namespace API_Project_PM.Core.Services.Locations
             _db.Locations.Add(item);
 
             await _db.SaveChangesAsync();
+
             return item;
 
         }

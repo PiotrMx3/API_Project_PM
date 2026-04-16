@@ -27,6 +27,7 @@ namespace API_Project_PM.Core.DTOs.Locations
         public string Box { get; set; } = string.Empty;
 
         [Required]
+        [EnumDataType(typeof(LocationType))]
         public LocationType LocationType { get; set; }
 
     }

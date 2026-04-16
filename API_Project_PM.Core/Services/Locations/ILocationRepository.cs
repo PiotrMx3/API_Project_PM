@@ -2,7 +2,7 @@
 
 namespace API_Project_PM.Core.Services.Locations
 {
-    public interface ILocationsRepository
+    public interface ILocationRepository
     {
         Task<IEnumerable<Location>> GetAllAsync();
         Task<Location?> GetByIdAsync(int id);

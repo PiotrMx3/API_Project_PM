@@ -2,7 +2,7 @@
 
 namespace API_Project_PM.Core.Services.Parts
 {
-    public interface IPartsRepository
+    public interface IPartRepository
     {
         Task<IEnumerable<Part>> GetAllParts();
         Task<Part?> GetPartById(int id);
