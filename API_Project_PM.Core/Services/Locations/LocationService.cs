@@ -27,10 +27,21 @@ namespace API_Project_PM.Core.Services.Locations
         public async Task<bool> DeleteAsync(int id)
         {
             Location? result = await _db.Locations.FindAsync(id);
-
             if (result is null) return false;
 
+            // check active stock in StockItem
+            bool hasStock = await _db.StockItems.AnyAsync(s => s.LocationId == result.Id && s.Quantity > 0);
+
+            if(hasStock) throw new InvalidOperationException("Locatie heeft nog voorraad");
+
+
+            // Set Null Parts.DefaultLocation
+            await _db.Parts.Where(p => p.DefaultLocationId == result.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.DefaultLocationId, (int?)null));
+
+
             result.IsDeleted = true;
+            result.DeletedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync();
 

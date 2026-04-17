@@ -103,17 +103,24 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteLocation(int id)
         {
 
             if (id <= 0) return BadRequest();
 
-            bool existing = await _locationRepository.DeleteAsync(id);
+            try
+            {
+                bool existing = await _locationRepository.DeleteAsync(id);
+                if (!existing) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException e)
+            {
+                return Conflict(new { conflict = e.Message });
+            }
 
-            if (!existing) return NotFound();
-
-            return NoContent();
         }
 
 
