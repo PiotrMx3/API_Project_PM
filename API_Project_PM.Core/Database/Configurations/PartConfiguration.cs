@@ -57,7 +57,7 @@ namespace API_Project_PM.Core.Database.Configurations
             builder.HasOne(p => p.DefaultLocation)
                 .WithMany()
                 .HasForeignKey(p => p.DefaultLocationId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

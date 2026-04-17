@@ -83,6 +83,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateCategory(int id, UpdateCategoryDto dto)
         {
@@ -90,14 +91,22 @@ namespace API_Project_PM.Controllers
             if (id <= 0) return BadRequest();
 
             var entity = _mapper.Map<Category>(dto);
-
             entity.Id = id;
 
-            bool updated = await _categoryRepository.UpdateAsync(entity);
+            try
+            {
+                bool updated = await _categoryRepository.UpdateAsync(entity);
 
-            if (!updated) return NotFound();
+                if (!updated) return NotFound();
 
-            return NoContent();
+                return NoContent();
+
+            }
+            catch (DbUpdateException)
+            {
+
+                return Conflict(new { conflict = "Categorie met deze naam bestaat al" });
+            }
         }
 
 
