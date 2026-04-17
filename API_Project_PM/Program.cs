@@ -32,6 +32,7 @@ namespace API_Project_PM
 
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
             builder.Services.AddScoped<ILocationRepository, LocationService>();
+            builder.Services.AddScoped<ISupplierRepository, SupplierService>();
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();

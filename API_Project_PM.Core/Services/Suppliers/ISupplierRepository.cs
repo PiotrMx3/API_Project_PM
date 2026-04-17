@@ -4,11 +4,11 @@ namespace API_Project_PM.Core.Services.Suppliers
 {
     public interface ISupplierRepository
     {
-        Task<IEnumerable<Supplier>> GetAllSuppliers();
-        Task<Supplier?> GetSupplierById(int id);
-        Task CreateSupplier(Supplier item);
-        Task<bool> UpdateSupplier(int id, Supplier item);
-        Task<bool> DeleteSupplier(int id);
+        Task<IEnumerable<Supplier>> GetAllAsync();
+        Task<Supplier?> GetByIdAsync(int id);
+        Task<Supplier> CreateAsync(Supplier item);
+        Task<bool> UpdateAsync(Supplier item);
+        Task<bool> DeleteAsync(int id);
 
     }
 }
