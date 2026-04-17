@@ -1,6 +1,9 @@
-﻿using API_Project_PM.Core.Models;
+﻿using API_Project_PM.Core.DTOs.Parts;
+using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Parts;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Controllers
 {
@@ -10,36 +13,45 @@ namespace API_Project_PM.Controllers
     public class PartsController : ControllerBase
     {
         private readonly IPartRepository _partsRepository;
+        private readonly IMapper _mapper;
 
-        public PartsController(IPartRepository partsRepository)
+
+        public PartsController(IPartRepository partsRepository, IMapper mapper)
         {
             this._partsRepository = partsRepository;
+            this._mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Part>>> GetAllParts()
+        public async Task<ActionResult<IEnumerable<PartDto>>> GetAllParts()
         {
-            IEnumerable<Part> result = await _partsRepository.GetAllParts();
+            IEnumerable<Part> result = await _partsRepository.GetAllAsync();
 
-            if (!result.Any()) return NotFound();
+            if (!result.Any()) return Ok(Array.Empty<PartDto>());
 
-            return Ok(result);
+            var repsone = _mapper.Map<IEnumerable<PartDto>>(result);
+
+            return Ok(repsone);
         }
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Part?>> GetPartById(int id)
+        public async Task<ActionResult<PartDto?>> GetPartById(int id)
         {
-            Part? result = await _partsRepository.GetPartById(id);
+            if (id <= 0) return BadRequest();
+
+            Part? result = await _partsRepository.GetByIdAsync(id);
 
             if (result is null) return NotFound();
 
-            return Ok(result);
+            PartDto response = _mapper.Map<PartDto>(result);
+
+            return Ok(response);
         }
 
 
@@ -49,20 +61,20 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult> CreatePart(Part item)
+        public async Task<ActionResult> CreatePart(CreatePartDto item)
         {
-            if (item is null) return BadRequest();
+            Part entity = _mapper.Map<Part>(item);
 
             try
             {
-                await _partsRepository.CreatePart(item);    
+                Part created = await _partsRepository.CreateAsync(entity);
 
-                return CreatedAtAction(nameof(GetPartById), new { id = item.Id }, item);
+                return CreatedAtAction(nameof(GetPartById), new { id = created.Id }, item);
 
             }
-            catch (InvalidOperationException ex)
+            catch (DbUpdateException)
             {
-                return Conflict(ex.Message);
+                return Conflict(new { conflict = "Deze Sku bestaat all" });
             }
 
         }
@@ -72,38 +84,58 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdatePart(int id, Part item)
+        public async Task<ActionResult> UpdatePart(int id, UpdatePartDto item)
         {
+            if (id <= 0) return BadRequest();
 
-            if (item is null || id != item.Id) return BadRequest();
+            Part entity = _mapper.Map<Part>(item);
 
-            Part? existing = await _partsRepository.GetPartById(id);
-            if (existing is null) return NotFound();
+            entity.Id = id;
 
-            if(existing.Sku != item.Sku)
+            try
             {
-                return BadRequest("Het SKU nummer kan niet worden bewerkt. Verwijder het artikel en maak een nieuw aan");
+                bool updated = await _partsRepository.UpdateAsync(entity);
+
+                if (!updated) return NotFound();
+
+                return NoContent();
+            }
+            catch (DbUpdateException)
+            {
+
+                return Conflict(new { conflict = "Deze Sku bestaat al" });
             }
 
-            bool updated = await _partsRepository.UpdatePart(id, item);
 
-            return NoContent();
         }
 
 
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeletePart(int id)
         {
+            if (id <= 0) return BadRequest();
 
-            bool existing = await _partsRepository.DeletePart(id);
+            try
+            {
+                bool existing = await _partsRepository.DeleteAsync(id);
 
-            if (!existing) return NotFound();
+                if (!existing) return NotFound();
 
-            return NoContent();
+                return NoContent();
+
+            }
+            catch (InvalidOperationException e)
+            {
+
+                return Conflict(new { conflict = e.Message });
+            }
         }
 
 

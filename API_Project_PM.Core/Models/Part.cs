@@ -16,7 +16,7 @@ namespace API_Project_PM.Core.Models
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        // Navigation for EF for .Include()
+        // Navigation for EF for .Include() 
         public Category? Category { get; set; }
 
         // Deafult location for Part after purchase

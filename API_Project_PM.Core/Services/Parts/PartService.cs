@@ -1,5 +1,6 @@
 ﻿using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Core.Services.Parts
 {
@@ -11,29 +12,64 @@ namespace API_Project_PM.Core.Services.Parts
         {
             this._db = db;
         }
-        public Task<Part?> CreateAsync(Part item)
+        public async Task<Part> CreateAsync(Part item)
         {
-            throw new NotImplementedException();
+            _db.Parts.Add(item);
+
+            await _db.SaveChangesAsync();
+
+            return item;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            Part? existing = await _db.Parts.FindAsync(id);
+            if (existing is null) return false;
+
+            bool hasStockQuantity = await _db.StockItems.AnyAsync(s => s.PartId == existing.Id && s.Quantity > 0);
+
+            if(hasStockQuantity) throw new InvalidOperationException("Onderdeel heeft nog voorraad");
+
+            bool hastSupllier = await _db.PartSuppliers.AnyAsync(p => p.PartId == existing.Id);
+
+            if (hastSupllier) throw new InvalidOperationException("Onderdeel heeft nog Leverancier");
+
+            existing.IsDeleted = true;
+            existing.DeletedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            return true;
+
         }
 
-        public Task<IEnumerable<Part>> GetAllAsync()
+        public async Task<IEnumerable<Part>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Parts.Include(p => p.Category)
+                .Include(p => p.DefaultLocation)
+                .ToListAsync();
         }
 
-        public Task<Part?> GetByIdAsync(int id)
+        public async Task<Part?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Parts.Include(p => p.Category)
+                .Include(p => p.DefaultLocation).FirstOrDefaultAsync(p => p.Id == id);
+
         }
 
-        public Task<bool> UpdateAsync(Part item)
+        public async Task<bool> UpdateAsync(Part item)
         {
-            throw new NotImplementedException();
+            Part? toBeUptdate = await _db.Parts.FindAsync(item.Id);
+
+            if (toBeUptdate is null) return false;
+
+            item.Sku = toBeUptdate.Sku;
+
+            _db.Entry(toBeUptdate).CurrentValues.SetValues(item);
+
+            await _db.SaveChangesAsync();
+
+            return true;
         }
     }
 }
