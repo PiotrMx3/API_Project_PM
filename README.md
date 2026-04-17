@@ -63,7 +63,7 @@ Warehouse management REST API built with ASP.NET Core 8 + Entity Framework Core 
 ## Relations
 
 ```
-Category ──(Restrict)──< Part >──(SetNull, optional)──> Location
+Category ──(Restrict)──< Part >──(Restrict, optional)──> Location
                           │
                           │  many-to-many via PartSupplier
                           ├──< PartSupplier >──> Supplier
@@ -79,7 +79,7 @@ Category ──(Restrict)──< Part >──(SetNull, optional)──> Location
 | From | To | On Delete |
 |---|---|---|
 | Category → Parts | one-to-many | Restrict |
-| Location → Parts (default) | one-to-many | SetNull |
+| Location → Parts (default) | one-to-many | Restrict |
 | Location → StockMovements | one-to-many | Restrict |
 | Part → StockMovements | one-to-many | Restrict |
 
