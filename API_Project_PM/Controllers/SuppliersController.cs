@@ -1,6 +1,9 @@
-﻿using API_Project_PM.Core.Models;
+﻿using API_Project_PM.Core.DTOs.Suppliers;
+using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Suppliers;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Controllers
 {
@@ -10,70 +13,103 @@ namespace API_Project_PM.Controllers
     public class SuppliersController : ControllerBase
     {
         private readonly ISupplierRepository _suppliersRepository;
+        private readonly IMapper _mapper;
 
 
-        public SuppliersController(ISupplierRepository suppliersRepository)
+
+        public SuppliersController(ISupplierRepository suppliersRepository, IMapper mapper)
         {
             this._suppliersRepository = suppliersRepository;
+            this._mapper = mapper;
         }
 
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
-        public async Task<ActionResult<IEnumerable<Supplier>>> GetAllSuppliers()
+        public async Task<ActionResult<IEnumerable<SupplierDto>>> GetAllSuppliers()
         {
-            IEnumerable<Supplier> result = await _suppliersRepository.GetAllSuppliers();
-            if (!result.Any()) return NotFound();
+            IEnumerable<Supplier> result = await _suppliersRepository.GetAllAsync();
 
-            return Ok(result);
+            if (!result.Any()) return Ok(Array.Empty<SupplierDto>());
+
+            IEnumerable<SupplierDto> repsone = _mapper.Map<IEnumerable<SupplierDto>>(result);
+            return Ok(repsone);
         }
 
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult<Supplier?>> GetSupplierById(int id)
+        public async Task<ActionResult<SupplierDto?>> GetSupplierById(int id)
         {
-            Supplier? result = await _suppliersRepository.GetSupplierById(id);
+            if (id <= 0) return BadRequest();
+
+            Supplier? result = await _suppliersRepository.GetByIdAsync(id);
 
             if (result is null) return NotFound();
 
-            return Ok(result);
+            SupplierDto repsone = _mapper.Map<SupplierDto>(result);
+
+            return Ok(repsone);
         }
 
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult> CreateSupplier(Supplier item)
+        public async Task<ActionResult> CreateSupplier(CreateSupplierDto item)
         {
-            if (item is null) return BadRequest();
+            Supplier entity = _mapper.Map<Supplier>(item);
 
-            await _suppliersRepository.CreateSupplier(item);
+            try
+            {
+                Supplier created = await _suppliersRepository.CreateAsync(entity);
 
-            return CreatedAtAction(nameof(GetSupplierById), new { id = item.Id }, item);
+                return CreatedAtAction(nameof(GetSupplierById), new { id = created.Id }, item);
+            }
+            catch (DbUpdateException)
+            {
+
+                return Conflict(new { conflict = "Deze BTW nummer bestaat al" });
+            }
+
         }
 
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateSupplier(int id, Supplier item)
+        public async Task<ActionResult> UpdateSupplier(int id, UpdateSupplierDto item)
         {
 
-            if (item is null || id != item.Id) return BadRequest();
-            bool existing = await _suppliersRepository.UpdateSupplier(id, item);
+            if (id <= 0) return BadRequest();
 
-            if (!existing) return NotFound();
+            try
+            {
+                var entity = _mapper.Map<Supplier>(item);
 
-            return NoContent();
+                entity.Id = id;
+
+                bool existing = await _suppliersRepository.UpdateAsync(entity);
+
+                if (!existing) return NotFound();
+
+                return NoContent();
+
+            }
+            catch (DbUpdateException)
+            {
+
+                return Conflict(new { conflict = "Deze Leverancier staat al" });
+            }
         }
 
 
@@ -81,15 +117,26 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteSupplier(int id)
         {
+            if (id <= 0) return BadRequest();
 
-            bool existing = await _suppliersRepository.DeleteSupplier(id);
 
-            if (!existing) return NotFound();
+            try
+            {
+                bool existing = await _suppliersRepository.DeleteAsync(id);
+                if (!existing) return NotFound();
+                return NoContent();
 
-            return NoContent();
+            }
+            catch (InvalidOperationException e)
+            {
+
+                return Conflict(new { conflict = e.Message });
+            }
+
         }
 
     }

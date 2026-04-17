@@ -7,7 +7,7 @@ namespace API_Project_PM.Core.Services.Suppliers
 {
     public class SupplierService : ISupplierRepository
     {
-        public readonly AppDBContext _db;
+        private readonly AppDBContext _db;
 
 
         public SupplierService(AppDBContext db)
@@ -28,10 +28,13 @@ namespace API_Project_PM.Core.Services.Suppliers
         public async Task<bool> DeleteAsync(int id)
         {
             Supplier? result = await _db.Suppliers.FindAsync(id);
-
             if (result is null) return false;
 
+            bool hasPartSupplier = await _db.PartSuppliers.AnyAsync(s => s.SupplierId == result.Id);
 
+            if (hasPartSupplier) throw new InvalidOperationException("Leverancier heeft nog onderdelen");
+
+            _db.Remove(result);
             await _db.SaveChangesAsync();
 
             return true;

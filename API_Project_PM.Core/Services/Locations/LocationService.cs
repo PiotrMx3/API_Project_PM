@@ -62,9 +62,9 @@ namespace API_Project_PM.Core.Services.Locations
         public async Task<bool> UpdateAsync(Location item)
         {
             var toUpdate = await _db.Locations.FindAsync(item.Id);
-
             if (toUpdate is null) return false;
 
+            // TODO: Ensure that using a random ID doesn't bring a deleted location back to life.
             _db.Entry(toUpdate).CurrentValues.SetValues(item);
             await _db.SaveChangesAsync();
 

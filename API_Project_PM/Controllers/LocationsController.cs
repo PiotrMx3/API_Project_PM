@@ -14,9 +14,9 @@ namespace API_Project_PM.Controllers
         private readonly ILocationRepository _locationRepository;
         private readonly IMapper _mapper;
 
-        public LocationsController(ILocationRepository catergory, IMapper mapper)
+        public LocationsController(ILocationRepository location, IMapper mapper)
         {
-            this._locationRepository = catergory;
+            this._locationRepository = location;
             this._mapper = mapper;
         }
 
@@ -81,21 +81,32 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateLocation(int id, UpdateLocationDto item)
         {
 
             if (id <= 0) return BadRequest();
 
-            var entity = _mapper.Map<Location>(item);
+            try
+            {
+                var entity = _mapper.Map<Location>(item);
 
-            entity.Id = id;
+                entity.Id = id;
 
-            bool existing = await _locationRepository.UpdateAsync(entity);
+                bool existing = await _locationRepository.UpdateAsync(entity);
 
-            if (!existing) return NotFound();
+                if (!existing) return NotFound();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (DbUpdateException)
+            {
+
+                return Conflict(new { conflict = "Locatie bestaat al" });
+
+            }
+
         }
 
 

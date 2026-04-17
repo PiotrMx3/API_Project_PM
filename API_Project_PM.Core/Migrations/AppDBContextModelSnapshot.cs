@@ -329,7 +329,7 @@ namespace API_Project_PM.Core.Migrations
                     b.HasOne("API_Project_PM.Core.Models.Location", "DefaultLocation")
                         .WithMany()
                         .HasForeignKey("DefaultLocationId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Category");
 
