@@ -59,7 +59,6 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateLocation(CreateLocationDto item)
         {
@@ -69,9 +68,7 @@ namespace API_Project_PM.Controllers
             {
                 Location created = await _locationRepository.CreateAsync(entity);
 
-                LocationDto response = _mapper.Map<LocationDto>(created);
-
-                return CreatedAtAction(nameof(GetLocationById), new { id = response.Id }, response);
+                return CreatedAtAction(nameof(GetLocationById), new { id = created.Id }, item);
             }
             catch (DbUpdateException)
             {

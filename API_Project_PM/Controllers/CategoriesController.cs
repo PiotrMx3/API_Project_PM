@@ -68,11 +68,8 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                var created = await _categoryRepository.CreateAsync(entity);
-
-                CategoryDto response = _mapper.Map<CategoryDto>(created);
-
-                return CreatedAtAction(nameof(GetCategoryById), new { id = response.Id }, response);
+                Category created = await _categoryRepository.CreateAsync(entity);
+                return CreatedAtAction(nameof(GetCategoryById), new { id = created.Id }, dto);
             }
             catch (DbUpdateException)
             {
