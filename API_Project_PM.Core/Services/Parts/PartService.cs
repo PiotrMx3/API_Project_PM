@@ -24,15 +24,16 @@ namespace API_Project_PM.Core.Services.Parts
         public async Task<bool> DeleteAsync(int id)
         {
             Part? existing = await _db.Parts.FindAsync(id);
+
             if (existing is null) return false;
 
-            bool hasStockQuantity = await _db.StockItems.AnyAsync(s => s.PartId == existing.Id && s.Quantity > 0);
+            bool hasStockQuantity = await _db.StockItems.AnyAsync(s => s.PartId == id && s.Quantity > 0);
 
             if(hasStockQuantity) throw new InvalidOperationException("Onderdeel heeft nog voorraad");
 
-            bool hastSupllier = await _db.PartSuppliers.AnyAsync(p => p.PartId == existing.Id);
+            bool hasSupplier = await _db.PartSuppliers.AnyAsync(p => p.PartId == id);
 
-            if (hastSupllier) throw new InvalidOperationException("Onderdeel heeft nog Leverancier");
+            if (hasSupplier) throw new InvalidOperationException("Onderdeel heeft nog Leverancier");
 
             existing.IsDeleted = true;
             existing.DeletedAt = DateTime.UtcNow;
