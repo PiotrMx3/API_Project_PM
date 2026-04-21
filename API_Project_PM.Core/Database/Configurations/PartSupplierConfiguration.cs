@@ -26,7 +26,7 @@ namespace API_Project_PM.Core.Database.Configurations
                 .WithMany(p => p.PartSuppliers)
                 .HasForeignKey(ps => ps.PartId)
 
-                // Removing Part remove PS records
+                // Can not remove part when PS existing
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(ps => ps.Supplier)
