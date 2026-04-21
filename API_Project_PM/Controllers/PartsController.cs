@@ -31,7 +31,7 @@ namespace API_Project_PM.Controllers
 
             if (!result.Any()) return Ok(Array.Empty<PartDto>());
 
-            var repsone = _mapper.Map<IEnumerable<PartDto>>(result);
+            IEnumerable<PartDto> repsone = _mapper.Map<IEnumerable<PartDto>>(result);
 
             return Ok(repsone);
         }

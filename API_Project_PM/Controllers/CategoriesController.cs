@@ -64,7 +64,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> CreateCategory(CreateCategoryDto dto)
         {
-            var entity = _mapper.Map<Category>(dto);
+            Category? entity = _mapper.Map<Category>(dto);
 
             try
             {
@@ -90,7 +90,7 @@ namespace API_Project_PM.Controllers
 
             if (id <= 0) return BadRequest();
 
-            var entity = _mapper.Map<Category>(dto);
+            Category entity = _mapper.Map<Category>(dto);
             entity.Id = id;
 
             try
@@ -123,7 +123,7 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                var deleted = await _categoryRepository.DeleteAsync(id);
+                bool deleted = await _categoryRepository.DeleteAsync(id);
                 if (!deleted) return NotFound();
                 return NoContent();
             }

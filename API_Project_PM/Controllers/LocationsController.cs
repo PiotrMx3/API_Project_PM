@@ -90,7 +90,7 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                var entity = _mapper.Map<Location>(item);
+                Location entity = _mapper.Map<Location>(item);
 
                 entity.Id = id;
 

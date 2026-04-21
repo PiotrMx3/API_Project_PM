@@ -94,7 +94,7 @@ namespace API_Project_PM.Controllers
 
             try
             {
-                var entity = _mapper.Map<Supplier>(item);
+                Supplier entity = _mapper.Map<Supplier>(item);
 
                 entity.Id = id;
 
