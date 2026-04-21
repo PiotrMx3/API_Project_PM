@@ -41,7 +41,7 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PartDto?>> GetPartById(int id)
+        public async Task<ActionResult<PartWithSuppliersDto>> GetPartById(int id)
         {
             if (id <= 0) return BadRequest();
 
@@ -49,7 +49,7 @@ namespace API_Project_PM.Controllers
 
             if (result is null) return NotFound();
 
-            PartDto response = _mapper.Map<PartDto>(result);
+            PartWithSuppliersDto response = _mapper.Map<PartWithSuppliersDto>(result);
 
             return Ok(response);
         }

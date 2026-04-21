@@ -1,6 +1,13 @@
-﻿namespace API_Project_PM.Core.Models
+﻿using API_Project_PM.Core.DTOs.Parts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace API_Project_PM.Core.DTOs.Suppliers
 {
-    public class Supplier
+    public class SupplierWithPartsDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -10,7 +17,6 @@
         public string PaymentTerms { get; set; } = string.Empty;
         public decimal TaxRate { get; set; }
         public bool IsActive { get; set; }
-        public ICollection<PartSupplier> PartSuppliers { get; set; } = new List<PartSupplier>();
-
+        public IEnumerable<PartDto> Parts { get; set; } = null!;
     }
 }

@@ -26,26 +26,42 @@ namespace API_Project_PM.Core.Services.Locations
 
         public async Task<bool> DeleteAsync(int id)
         {
+
+            // 1 query
             Location? result = await _db.Locations.FindAsync(id);
             if (result is null) return false;
 
             // check active stock in StockItem
             bool hasStock = await _db.StockItems.AnyAsync(s => s.LocationId == result.Id && s.Quantity > 0);
 
-            if(hasStock) throw new InvalidOperationException("Locatie heeft nog voorraad");
+            if (hasStock) throw new InvalidOperationException("Locatie heeft nog voorraad");
 
+            // Two separate DB operations require atomic behavior
+            // DefaultLocationId null-update may succeed while soft delete fails,
+            // leaving data in inconsistent state transaction prevents this
+
+            // 2 query
 
             // Set Null Parts.DefaultLocation
-            await _db.Parts.Where(p => p.DefaultLocationId == result.Id)
-                .ExecuteUpdateAsync(s => s.SetProperty(p => p.DefaultLocationId, (int?)null));
+            await using var transaction = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                await _db.Parts
+                    .Where(p => p.DefaultLocationId == result.Id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.DefaultLocationId, (int?)null));
 
+                result.IsDeleted = true;
+                result.DeletedAt = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
 
-            result.IsDeleted = true;
-            result.DeletedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
-
-            return true;
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Location>> GetAllAsync()

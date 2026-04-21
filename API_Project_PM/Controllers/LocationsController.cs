@@ -131,6 +131,10 @@ namespace API_Project_PM.Controllers
             {
                 return Conflict(new { conflict = e.Message });
             }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { error = e.Message });
+            }
 
         }
 

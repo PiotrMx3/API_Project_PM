@@ -53,8 +53,12 @@ namespace API_Project_PM.Core.Services.Parts
 
         public async Task<Part?> GetByIdAsync(int id)
         {
-            return await _db.Parts.Include(p => p.Category)
-                .Include(p => p.DefaultLocation).FirstOrDefaultAsync(p => p.Id == id);
+            return await _db.Parts
+                .Include(p => p.Category)
+                .Include(p => p.DefaultLocation)
+                .Include(p => p.PartSuppliers)
+                .ThenInclude(ps => ps.Supplier)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
         }
 

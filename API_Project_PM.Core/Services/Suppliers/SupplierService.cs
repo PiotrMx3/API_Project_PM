@@ -48,7 +48,10 @@ namespace API_Project_PM.Core.Services.Suppliers
 
         public async Task<Supplier?> GetByIdAsync(int id)
         {
-            return await _db.Suppliers.FindAsync(id);
+            return await _db.Suppliers
+                .Include(s => s.PartSuppliers)
+                .ThenInclude(ps => ps.Part)
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<bool> UpdateAsync(Supplier item)
