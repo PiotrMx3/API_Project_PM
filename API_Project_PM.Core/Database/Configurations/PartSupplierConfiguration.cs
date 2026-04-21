@@ -30,7 +30,7 @@ namespace API_Project_PM.Core.Database.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(ps => ps.Supplier)
-                 .WithMany()
+                 .WithMany(s => s.PartSuppliers)
                  .HasForeignKey(ps => ps.SupplierId)
                  //Can not remove supplier when PS existing
                  .OnDelete(DeleteBehavior.Restrict);
