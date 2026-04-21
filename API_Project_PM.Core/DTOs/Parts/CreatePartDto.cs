@@ -13,7 +13,7 @@ namespace API_Project_PM.Core.DTOs.Parts
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        [Range(00000000.01,99999999.99)]
+        [Range(0.01,99999999.99)]
         public decimal Price { get; set; }
 
         [Required]
