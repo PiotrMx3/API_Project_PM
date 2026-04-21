@@ -26,7 +26,6 @@ namespace API_Project_PM.Core.DTOs.Suppliers
         [Range(0.01, 99.99)]
         public decimal TaxRate { get; set; }
 
-        [Range(typeof(bool), "true", "false")]
         public bool IsActive { get; set; }
     }
 }
