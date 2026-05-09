@@ -1,6 +1,8 @@
-﻿using API_Project_PM.Core.Services.Categories;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
 using API_Project_PM.Core.DTOs.Categories;
 using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Services.Categories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -71,9 +73,13 @@ namespace API_Project_PM.Controllers
                 Category created = await _categoryRepository.CreateAsync(entity);
                 return CreatedAtAction(nameof(GetCategoryById), new { id = created.Id }, dto);
             }
+            catch (ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+            }
             catch (DbUpdateException)
             {
-                return Conflict(new { conflict = "Categorie met deze naam bestaat al" });
+                throw;
             }
         }
 
@@ -102,10 +108,13 @@ namespace API_Project_PM.Controllers
                 return NoContent();
 
             }
+            catch (ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+            }
             catch (DbUpdateException)
             {
-
-                return Conflict(new { conflict = "Categorie met deze naam bestaat al" });
+                throw;
             }
         }
 
@@ -127,9 +136,14 @@ namespace API_Project_PM.Controllers
                 if (!deleted) return NotFound();
                 return NoContent();
             }
+            catch (CannotDeleteException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
             catch (DbUpdateException)
             {
-                return Conflict(new { conflict = "Kan categorie niet verwijderen: er zijn onderdelen gekoppeld" });
+                throw;
             }
         }
     }
