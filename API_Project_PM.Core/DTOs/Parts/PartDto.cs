@@ -16,7 +16,7 @@ namespace API_Project_PM.Core.DTOs.Parts
         public bool IsSellItem { get; set; }
         public string AddInfo { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
-        public string? DefaultLocation { get; set; } 
+        public string? DefaultLocation { get; set; }
 
     }
 }

@@ -6,6 +6,7 @@ using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
 using API_Project_PM.Core.Services.Parts;
 using API_Project_PM.Core.Services.PartsSuppliers;
+using API_Project_PM.Core.Services.StockItems;
 using API_Project_PM.Core.Services.Suppliers;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,6 +37,8 @@ namespace API_Project_PM
             builder.Services.AddScoped<ISupplierRepository, SupplierService>();
             builder.Services.AddScoped<IPartRepository, PartService>();
             builder.Services.AddScoped<IPartSupplierRepository, PartSupplierService>();
+            builder.Services.AddScoped<IStockItemRepository, StockItemService>();
+
 
 
 

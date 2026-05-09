@@ -28,7 +28,6 @@ namespace API_Project_PM.Core.DTOs.Parts
    
         [Required]
         public int CategoryId { get; set; }
-
         public int? DefaultLocationId { get; set; }
     }
 }

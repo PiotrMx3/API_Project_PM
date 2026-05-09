@@ -1,4 +1,6 @@
-﻿using API_Project_PM.Core.Database;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,19 @@ namespace API_Project_PM.Core.Services.Parts
         }
         public async Task<Part> CreateAsync(Part item)
         {
+            Part? existingSku = await _db.Parts.Where(p => p.Sku == item.Sku).FirstOrDefaultAsync();
+
+            if (existingSku is not null) throw new ConflictException($"Onderdeel met Sku {existingSku.Sku} bestaat al!");
+
+
+            _ = await _db.Categories.FindAsync(item.CategoryId) ?? throw new NotFoundException($"Categorie met ID: {item.CategoryId} bestaat niet");
+
+            if (item.DefaultLocationId is not null)
+            {
+                _ = await _db.Locations.FindAsync(item.DefaultLocationId) ??
+                    throw new NotFoundException($"Locatie met ID: {item.DefaultLocationId} bestaat niet");
+            }
+           
             _db.Parts.Add(item);
 
             await _db.SaveChangesAsync();
@@ -27,13 +42,16 @@ namespace API_Project_PM.Core.Services.Parts
 
             if (existing is null) return false;
 
-            bool hasStockQuantity = await _db.StockItems.AnyAsync(s => s.PartId == id && s.Quantity > 0);
+            List<string> relatedEntities = new();
 
-            if(hasStockQuantity) throw new InvalidOperationException("Onderdeel heeft nog voorraad");
+            bool hasStockQuantity = await _db.StockItems.AnyAsync(s => s.PartId == id && s.Quantity > 0);
+            if (hasStockQuantity) relatedEntities.Add("Onderdeel heeft nog voorraad");
 
             bool hasSupplier = await _db.PartSuppliers.AnyAsync(p => p.PartId == id);
+            if (hasSupplier) relatedEntities.Add("Onderdeel heeft nog leverancier");
 
-            if (hasSupplier) throw new InvalidOperationException("Onderdeel heeft nog Leverancier");
+            if (hasStockQuantity || hasSupplier) throw new CannotDeleteException(existing.Name, relatedEntities);
+
 
             existing.IsDeleted = true;
             existing.DeletedAt = DateTime.UtcNow;
@@ -65,10 +83,18 @@ namespace API_Project_PM.Core.Services.Parts
         public async Task<bool> UpdateAsync(Part item)
         {
             Part? toBeUptdate = await _db.Parts.FindAsync(item.Id);
-
             if (toBeUptdate is null) return false;
 
+            _ = await _db.Categories.FindAsync(item.CategoryId) ?? throw new NotFoundException($"Categorie met ID: {item.CategoryId} bestaat niet");
+
+            if (item.DefaultLocationId is not null)
+            {
+                _ = await _db.Locations.FindAsync(item.DefaultLocationId) ??
+                    throw new NotFoundException($"Locatie met ID: {item.DefaultLocationId} bestaat niet");
+            }
+
             item.Sku = toBeUptdate.Sku;
+
 
             _db.Entry(toBeUptdate).CurrentValues.SetValues(item);
 

@@ -1,4 +1,6 @@
-﻿using API_Project_PM.Core.DTOs.Parts;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.DTOs.Parts;
 using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Parts;
 using AutoMapper;
@@ -72,11 +74,18 @@ namespace API_Project_PM.Controllers
                 return CreatedAtAction(nameof(GetPartById), new { id = created.Id }, item);
 
             }
-            catch (DbUpdateException)
+            catch (ConflictException e)
             {
-                return Conflict(new { conflict = "Deze Sku bestaat all" });
+                return Conflict(new { conflict = e.Message });
             }
-
+            catch(NotFoundException e )
+            {
+                return NotFound(new { notFound = e.Message });
+            }
+            catch(DbUpdateException)
+            {
+                throw;
+            }
         }
 
 
@@ -84,7 +93,6 @@ namespace API_Project_PM.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdatePart(int id, UpdatePartDto item)
         {
@@ -102,12 +110,14 @@ namespace API_Project_PM.Controllers
 
                 return NoContent();
             }
-            catch (DbUpdateException)
+            catch (NotFoundException e)
             {
-
-                return Conflict(new { conflict = "Deze Sku bestaat al" });
+                return NotFound(new { notFound = e.Message });
             }
-
+            catch(DbUpdateException)
+            {
+                throw;
+            }
 
         }
 
@@ -131,9 +141,8 @@ namespace API_Project_PM.Controllers
                 return NoContent();
 
             }
-            catch (InvalidOperationException e)
+            catch (CannotDeleteException e)
             {
-
                 return Conflict(new { conflict = e.Message });
             }
         }
