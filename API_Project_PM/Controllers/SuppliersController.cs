@@ -1,4 +1,6 @@
-﻿using API_Project_PM.Core.DTOs.Suppliers;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.DTOs.Suppliers;
 using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Suppliers;
 using AutoMapper;
@@ -73,10 +75,15 @@ namespace API_Project_PM.Controllers
 
                 return CreatedAtAction(nameof(GetSupplierById), new { id = created.Id }, item);
             }
+            catch (ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
             catch (DbUpdateException)
             {
 
-                return Conflict(new { conflict = "Deze BTW nummer bestaat al" });
+                throw;
             }
 
         }
@@ -105,10 +112,14 @@ namespace API_Project_PM.Controllers
                 return NoContent();
 
             }
+            catch (ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
             catch (DbUpdateException)
             {
-
-                return Conflict(new { conflict = "Deze Leverancier staat al" });
+                throw;
             }
         }
 
@@ -131,10 +142,15 @@ namespace API_Project_PM.Controllers
                 return NoContent();
 
             }
-            catch (InvalidOperationException e)
+            catch (CannotDeleteException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
+            catch (DbUpdateException)
             {
 
-                return Conflict(new { conflict = e.Message });
+                throw;
             }
 
         }
