@@ -16,8 +16,9 @@ namespace API_Project_PM.Core.Services.Parts
         }
         public async Task<Part> CreateAsync(Part item)
         {
-            Part? existingSku = await _db.Parts.Where(p => p.Sku == item.Sku).FirstOrDefaultAsync();
+            Part? existingSku = await _db.Parts.IgnoreQueryFilters().Where(p => p.Sku == item.Sku).FirstOrDefaultAsync();
 
+            if(existingSku is not null && existingSku.IsDeleted) throw new ConflictException($"Deze Sku is inactive ID: {existingSku.Id}");
             if (existingSku is not null) throw new ConflictException($"Onderdeel met Sku {existingSku.Sku} bestaat al!");
 
 
@@ -77,7 +78,7 @@ namespace API_Project_PM.Core.Services.Parts
                 .Include(p => p.PartSuppliers)
                 .ThenInclude(ps => ps.Supplier)
                 .FirstOrDefaultAsync(p => p.Id == id);
-
+             
         }
 
         public async Task<bool> UpdateAsync(Part item)
@@ -94,7 +95,6 @@ namespace API_Project_PM.Core.Services.Parts
             }
 
             item.Sku = toBeUptdate.Sku;
-
 
             _db.Entry(toBeUptdate).CurrentValues.SetValues(item);
 
