@@ -1,4 +1,6 @@
-﻿using API_Project_PM.Core.Database;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,16 @@ namespace API_Project_PM.Core.Services.Locations
 
         public async Task<Location> CreateAsync(Location item)
         {
+            Location? duplicate = await _db.Locations.IgnoreQueryFilters()
+            .Where(l => l.Zone == item.Zone
+            && l.Rack == item.Rack
+            && l.Shelf == item.Shelf
+            && l.Box == item.Box).
+            FirstOrDefaultAsync();
+
+            if (duplicate is not null && duplicate.IsDeleted) throw new ConflictException($"Deze locatie is inactive ID: {duplicate.Id}");
+            if (duplicate is not null) throw new ConflictException("Deze locatie bestaat all");
+
             _db.Locations.Add(item);
 
             await _db.SaveChangesAsync();
@@ -34,7 +46,7 @@ namespace API_Project_PM.Core.Services.Locations
             // check active stock in StockItem
             bool hasStock = await _db.StockItems.AnyAsync(s => s.LocationId == result.Id && s.Quantity > 0);
 
-            if (hasStock) throw new InvalidOperationException("Locatie heeft nog voorraad");
+            if (hasStock) throw new CannotDeleteException("Location", "Parts");
 
             // Two separate DB operations require atomic behavior
             // DefaultLocationId null-update may succeed while soft delete fails,
@@ -77,10 +89,20 @@ namespace API_Project_PM.Core.Services.Locations
 
         public async Task<bool> UpdateAsync(Location item)
         {
-            var toUpdate = await _db.Locations.FindAsync(item.Id);
+            Location? toUpdate = await _db.Locations.FindAsync(item.Id);
             if (toUpdate is null) return false;
 
-            // TODO: Ensure that using a random ID doesn't bring a deleted location back to life.
+            Location? duplicat = await _db.Locations.IgnoreQueryFilters().Where(l => l.Zone == item.Zone
+            && l.Rack == item.Rack
+            && l.Shelf == item.Shelf
+            && l.Box == item.Box
+            && item.Id != l.Id).
+            FirstOrDefaultAsync();
+
+            if (duplicat is not null && duplicat.IsDeleted) throw new ConflictException($"Deze locatie is inactive ID: {duplicat.Id}");
+
+            if (duplicat is not null) throw new ConflictException("Deze Locatie bestaat al");
+
             _db.Entry(toUpdate).CurrentValues.SetValues(item);
             await _db.SaveChangesAsync();
 

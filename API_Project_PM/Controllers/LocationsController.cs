@@ -1,4 +1,6 @@
-﻿using API_Project_PM.Core.DTOs.Locations;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.DTOs.Locations;
 using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Locations;
 using AutoMapper;
@@ -70,9 +72,14 @@ namespace API_Project_PM.Controllers
 
                 return CreatedAtAction(nameof(GetLocationById), new { id = created.Id }, item);
             }
+            catch(ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
             catch (DbUpdateException)
             {
-                return Conflict(new { conflict = "Locatie bestaat al" });
+                throw;
             }
 
         }
@@ -100,11 +107,15 @@ namespace API_Project_PM.Controllers
 
                 return NoContent();
             }
+            catch(ConflictException e)
+            {
+                return Conflict(new { conflict = e.Message });
+
+            }
             catch (DbUpdateException)
             {
 
-                return Conflict(new { conflict = "Locatie bestaat al" });
-
+                throw;
             }
 
         }
@@ -127,13 +138,13 @@ namespace API_Project_PM.Controllers
                 if (!existing) return NotFound();
                 return NoContent();
             }
-            catch (InvalidOperationException e)
+            catch (CannotDeleteException e)
             {
                 return Conflict(new { conflict = e.Message });
             }
-            catch (Exception e)
+            catch (DbUpdateException)
             {
-                return StatusCode(500, new { error = e.Message });
+                throw;
             }
 
         }
@@ -142,3 +153,4 @@ namespace API_Project_PM.Controllers
 
     }
 }
+        
