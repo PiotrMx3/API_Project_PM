@@ -54,9 +54,9 @@ namespace API_Project_PM.Core.Services.Categories
             Category? result = await _db.Categories.FindAsync(id);
             if (result is null) return false;
 
-            bool categoryHasActiveParts = await _db.Parts.IgnoreQueryFilters().AnyAsync(p => p.CategoryId == result.Id);
+            bool categoryHasFkiInParts = await _db.Parts.IgnoreQueryFilters().AnyAsync(p => p.CategoryId == result.Id);
 
-            if (categoryHasActiveParts) throw new CannotDeleteException($"Categorie {result.Name}", "Parts");
+            if (categoryHasFkiInParts) throw new CannotDeleteException($"Categorie {result.Name}", "Parts");
 
             _db.Categories.Remove(result);
 
