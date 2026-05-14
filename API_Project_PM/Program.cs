@@ -1,4 +1,3 @@
-
 using API_Project_PM.Core.Database;
 using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
@@ -7,7 +6,11 @@ using API_Project_PM.Core.Services.PartsSuppliers;
 using API_Project_PM.Core.Services.StockItems;
 using API_Project_PM.Core.Services.StockMovements;
 using API_Project_PM.Core.Services.Suppliers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace API_Project_PM
 {
@@ -17,7 +20,6 @@ namespace API_Project_PM
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container
             builder.Services.AddDbContext<AppDBContext>(options =>
                 options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
                 ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
@@ -25,10 +27,9 @@ namespace API_Project_PM
 
             var autoMapperKey = builder.Configuration["AutoMapperSettings:LicenseKey"];
 
-            builder.Services.AddAutoMapper(cfg => 
+            builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.LicenseKey = autoMapperKey;
-
             }, AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
@@ -39,20 +40,54 @@ namespace API_Project_PM
             builder.Services.AddScoped<IStockItemRepository, StockItemService>();
             builder.Services.AddScoped<IStockMovementRepository, StockMovementService>();
 
-
-
-
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+                    };
+                });
 
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
             builder.Services.AddControllers();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Voer je JWT token in"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -60,11 +95,9 @@ namespace API_Project_PM
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
-
             app.Run();
         }
     }

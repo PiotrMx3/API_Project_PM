@@ -5,11 +5,13 @@ using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.StockItems;
 using API_Project_PM.Core.Services.StockMovements;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class StockMovementsController : ControllerBase

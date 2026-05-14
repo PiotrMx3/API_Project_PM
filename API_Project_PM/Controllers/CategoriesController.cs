@@ -4,11 +4,13 @@ using API_Project_PM.Core.DTOs.Categories;
 using API_Project_PM.Core.Models;
 using API_Project_PM.Core.Services.Categories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Project_PM.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
