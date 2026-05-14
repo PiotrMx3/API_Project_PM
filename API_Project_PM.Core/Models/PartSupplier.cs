@@ -1,5 +1,4 @@
-﻿
-namespace API_Project_PM.Core.Models
+﻿namespace API_Project_PM.Core.Models
 {
     public class PartSupplier
     {
