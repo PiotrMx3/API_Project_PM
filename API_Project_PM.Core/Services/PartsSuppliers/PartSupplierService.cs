@@ -39,6 +39,14 @@ namespace API_Project_PM.Core.Services.PartsSuppliers
             return true;
         }
 
+        public async Task<IEnumerable<PartSupplier>> GetAllAsync()
+        {
+            return await _db.PartSuppliers
+                .Include(ps => ps.Part)
+                .Include(ps => ps.Supplier)
+                .ToListAsync();
+        }
+
         public async Task<PartSupplier?> GetById(int partId, int supplierId)
         {
             PartSupplier? result = await _db.PartSuppliers
@@ -52,7 +60,7 @@ namespace API_Project_PM.Core.Services.PartsSuppliers
         public async Task<bool> UpdetAsync(PartSupplier item)
         {
             var toBeUptdate = await _db.PartSuppliers
-                .FirstOrDefaultAsync(ps => ps.PartId ==item.PartId && ps.SupplierId == item.SupplierId);
+                .FirstOrDefaultAsync(ps => ps.PartId == item.PartId && ps.SupplierId == item.SupplierId);
 
             if (toBeUptdate is null) return false;
 

@@ -1,5 +1,4 @@
-﻿
-using API_Project_PM.Core.Models;
+﻿using API_Project_PM.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

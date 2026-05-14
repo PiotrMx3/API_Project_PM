@@ -1,7 +1,5 @@
 ﻿using API_Project_PM.Core.DTOs.PartsSuppliers;
-using API_Project_PM.Core.DTOs.Suppliers;
 using API_Project_PM.Core.Models;
-using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.PartsSuppliers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +22,21 @@ namespace API_Project_PM.Controllers
             this._mapper = mapper;
         }
 
+
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<PartSupplierDto>>> GetAllPartSuppliers()
+        {
+            IEnumerable<PartSupplier> result = await _partSupplierRepository.GetAllAsync();
+
+            if (!result.Any()) return Ok(Array.Empty<PartSupplierDto>());
+
+            IEnumerable<PartSupplierDto> repsone = _mapper.Map<IEnumerable<PartSupplierDto>>(result);
+
+            return Ok(repsone);
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]

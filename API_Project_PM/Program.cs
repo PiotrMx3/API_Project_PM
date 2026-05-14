@@ -7,6 +7,7 @@ using API_Project_PM.Core.Services.Locations;
 using API_Project_PM.Core.Services.Parts;
 using API_Project_PM.Core.Services.PartsSuppliers;
 using API_Project_PM.Core.Services.StockItems;
+using API_Project_PM.Core.Services.StockMovements;
 using API_Project_PM.Core.Services.Suppliers;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ namespace API_Project_PM
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services to the container
             builder.Services.AddDbContext<AppDBContext>(options =>
                 options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
                 ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
@@ -38,6 +39,8 @@ namespace API_Project_PM
             builder.Services.AddScoped<IPartRepository, PartService>();
             builder.Services.AddScoped<IPartSupplierRepository, PartSupplierService>();
             builder.Services.AddScoped<IStockItemRepository, StockItemService>();
+            builder.Services.AddScoped<IStockMovementRepository, StockMovementService>();
+
 
 
 

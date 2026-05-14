@@ -91,7 +91,9 @@ namespace API_Project_PM.Core.Services.StockItems
                     Quantity = quantity
                 });
 
+                await _db.SaveChangesAsync();
                 return true;
+
             }
 
             if (type == MovementType.In)
@@ -104,6 +106,7 @@ namespace API_Project_PM.Core.Services.StockItems
                 if (toBeUpdate.Quantity < 0) throw new ConflictException("Onvoldoende voorrad");
             }
 
+            await _db.SaveChangesAsync();
             return true;
         }
     }
