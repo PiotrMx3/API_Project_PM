@@ -127,6 +127,7 @@ namespace API_Minimal_Project_PM
             app.MapAuthEndpoints();
             app.MapCategoryEndpoints();
             app.MapLocationsEndpoints();
+            app.MapPartsEndpoints();
 
             app.Run();
         }
