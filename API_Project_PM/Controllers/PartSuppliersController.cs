@@ -11,14 +11,14 @@ namespace API_Project_PM.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class PartSupplierController : ControllerBase
+    public class PartSuppliersController : ControllerBase
     {
         private readonly IPartSupplierRepository _partSupplierRepository;
         private readonly IMapper _mapper;
 
 
 
-        public PartSupplierController(IPartSupplierRepository partSupplierRepository, IMapper mapper)
+        public PartSuppliersController(IPartSupplierRepository partSupplierRepository, IMapper mapper)
         {
             this._partSupplierRepository = partSupplierRepository;
             this._mapper = mapper;
