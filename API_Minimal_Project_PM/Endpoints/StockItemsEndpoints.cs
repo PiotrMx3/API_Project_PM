@@ -10,9 +10,9 @@ namespace API_Minimal_Project_PM.Eindpoints
     {
         public static void MapStockItemsEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/api/stock-items").WithTags("StockItems").RequireAuthorization();
+            var stockItemsGroup = app.MapGroup("/api/stock-items").WithTags("StockItems").RequireAuthorization();
 
-            group.MapGet("/",
+            stockItemsGroup.MapGet("/",
                 async Task<Ok<IEnumerable<StockItemDto>>> (
                     IStockItemRepository repo,
                     IMapper mapper) =>
@@ -21,7 +21,7 @@ namespace API_Minimal_Project_PM.Eindpoints
                     return TypedResults.Ok(mapper.Map<IEnumerable<StockItemDto>>(items));
                 });
 
-            group.MapGet("/location/{id:int}",
+            stockItemsGroup.MapGet("/location/{id:int}",
                 async Task<Results<Ok<IEnumerable<StockItemDto>>, BadRequest>> (
                     int id,
                     IStockItemRepository repo,
@@ -33,7 +33,7 @@ namespace API_Minimal_Project_PM.Eindpoints
                     return TypedResults.Ok(mapper.Map<IEnumerable<StockItemDto>>(items));
                 });
 
-            group.MapGet("/part/{id:int}",
+            stockItemsGroup.MapGet("/part/{id:int}",
                 async Task<Results<Ok<IEnumerable<StockItemDto>>, BadRequest>> (
                     int id,
                     IStockItemRepository repo,
@@ -45,7 +45,7 @@ namespace API_Minimal_Project_PM.Eindpoints
                     return TypedResults.Ok(mapper.Map<IEnumerable<StockItemDto>>(items));
                 });
 
-            group.MapDelete("/part/{partId:int}/location/{locationId:int}",
+            stockItemsGroup.MapDelete("/part/{partId:int}/location/{locationId:int}",
                 async Task<Results<NoContent, NotFound, BadRequest, Conflict<object>>> (
                     int partId,
                     int locationId,

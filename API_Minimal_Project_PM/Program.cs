@@ -23,8 +23,6 @@ namespace API_Minimal_Project_PM
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddEndpointsMetadataProviderApiExplorer();
-
             if (builder.Environment.IsStaging())
             {
                 builder.Services.AddDbContext<AppDBContext>(options =>
@@ -133,6 +131,7 @@ namespace API_Minimal_Project_PM
             app.MapPartsEndpoints();
             app.MapPartSupplierEndpoints();
             app.MapStockItemsEndpoints();
+            app.MapStockMovementEndpoints();
 
 
             app.Run();
