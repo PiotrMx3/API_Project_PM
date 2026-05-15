@@ -132,6 +132,7 @@ namespace API_Minimal_Project_PM
             app.MapPartSupplierEndpoints();
             app.MapStockItemsEndpoints();
             app.MapStockMovementEndpoints();
+            app.MapSuppliersEndpoints();
 
 
             app.Run();
