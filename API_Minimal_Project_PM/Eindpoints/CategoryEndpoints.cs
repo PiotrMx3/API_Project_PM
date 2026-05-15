@@ -1,6 +1,11 @@
-﻿using API_Project_PM.Core.Services.Categories;
+﻿using API_Project_PM.Core.CustomException;
+using API_Project_PM.Core.CustomExceptions;
+using API_Project_PM.Core.DTOs.Categories;
 using API_Project_PM.Core.Models;
+using API_Project_PM.Core.Services.Categories;
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace API_Minimal_Project_PM.Eindpoints
 {
@@ -8,62 +13,109 @@ namespace API_Minimal_Project_PM.Eindpoints
     {
         public static void MapCategoryEndpoints(this IEndpointRouteBuilder app)
         {
-            var categoryGroup = app.MapGroup("/api/Category").WithTags("Category");
+            var categoryGroup = app.MapGroup("/api/categories").WithTags("Categories").RequireAuthorization();
 
-            //    // 1. GET: GetAllCategories
-            //    categoryGroup.MapGet("/", async Task<Results<NotFound, Ok<IEnumerable<Category>>>> (ICategoryRepository repo) =>
-            //    {
-            //        var result = await repo.GetAllCategories();
-            //        if (!result.Any()) return TypedResults.NotFound();
+            categoryGroup.MapGet("/",
+                async Task<Ok<IEnumerable<CategoryDto>>> (
+                    ICategoryRepository repo,
+                    IMapper mapper) =>
+                {
+                    var categories = await repo.GetAllAsync();
+                    return TypedResults.Ok(mapper.Map<IEnumerable<CategoryDto>>(categories));
+                });
 
-            //        return TypedResults.Ok(result);
-            //    })
-            //    .Produces(StatusCodes.Status500InternalServerError);
+            categoryGroup.MapGet("/{id:int}",
+                async Task<Results<Ok<CategoryDto>, NotFound, BadRequest>> (
+                int id,
+                ICategoryRepository repo,
+                IMapper mapper) =>
+                {
+                    if (id <= 0) return TypedResults.BadRequest();
 
-            //    // 2. GET: GetCategoryById
-            //    categoryGroup.MapGet("/{id:int}", async Task<Results<NotFound, Ok<Category>>> (int id, ICategoryRepository repo) =>
-            //    {
-            //        var result = await repo.GetCategoryById(id);
-            //        if (result is null) return TypedResults.NotFound();
+                    var category = await repo.GetByIdAsync(id);
+                    if (category is null) return TypedResults.NotFound();
 
-            //        return TypedResults.Ok(result);
-            //    })
-            //    .WithName("GetCategoryById")
-            //    .Produces(StatusCodes.Status500InternalServerError);
+                    return TypedResults.Ok(mapper.Map<CategoryDto>(category));
+                })
+            .WithName("GetCategoryById");
 
-            //    // 3. POST: CreateCategory
-            //    categoryGroup.MapPost("/", async Task<Results<BadRequest, CreatedAtRoute<Category>>> (Category item, ICategoryRepository repo) =>
-            //    {
-            //        if (item is null) return TypedResults.BadRequest();
+            categoryGroup.MapPost("/",
+                async Task<Results<CreatedAtRoute<CategoryDto>, BadRequest, Conflict<object>>> (
+                CreateCategoryDto dto,
+                ICategoryRepository repo,
+                IMapper mapper) =>
+                {
+                    if (dto is null) return TypedResults.BadRequest();
 
-            //        await repo.CreateCategory(item);
+                    var category = mapper.Map<Category>(dto);
 
-            //        return TypedResults.CreatedAtRoute(item, "GetCategoryById", new { id = item.Id });
-            //    })
-            //    .Produces(StatusCodes.Status500InternalServerError);
+                    try
+                    {
+                        var created = await repo.CreateAsync(category);
+                        var result = mapper.Map<CategoryDto>(created);
+                        return TypedResults.CreatedAtRoute(result, "GetCategoryById", new { id = result.Id });
+                    }
+                    catch (ConflictException e)
+                    {
+                        return TypedResults.Conflict<object>(new { conflict = e.Message});
+                    }
+                    catch (DbUpdateException)
+                    {
+                        throw;
+                    }
+                });
 
-            //    // 4. PUT: UpdateCategory
-            //    categoryGroup.MapPut("/{id:int}", async Task<Results<BadRequest, NotFound, NoContent>> (int id, Category item, ICategoryRepository repo) =>
-            //    {
-            //        if (item is null || id != item.Id) return TypedResults.BadRequest();
+            categoryGroup.MapPut("/{id:int}",
+                async Task<Results<NoContent, NotFound, BadRequest, Conflict>> (
+                int id,
+                UpdateCategoryDto dto,
+                ICategoryRepository repo,
+                IMapper mapper) =>
+                {
+                    if (id <= 0) return TypedResults.BadRequest();
+                    if (dto is null) return TypedResults.BadRequest();
 
-            //        bool updated = await repo.UpdateCategory(id, item);
-            //        if (!updated) return TypedResults.NotFound();
+                    var category = mapper.Map<Category>(dto);
+                    category.Id = id;
 
-            //        return TypedResults.NoContent();
-            //    })
-            //    .Produces(StatusCodes.Status500InternalServerError);
+                    try
+                    {
+                        bool updated = await repo.UpdateAsync(category);
+                        if (!updated) return TypedResults.NotFound();
+                        return TypedResults.NoContent();
+                    }
+                    catch (ConflictException)
+                    {
+                        return TypedResults.Conflict();
+                    }
+                    catch (DbUpdateException)
+                    {
+                        throw;
+                    }
+                });
 
-            //    // 5. DELETE: DeleteCategory
-            //    categoryGroup.MapDelete("/{id:int}", async Task<Results<NotFound, NoContent>> (int id, ICategoryRepository repo) =>
-            //    {
-            //        bool deleted = await repo.DeleteCategory(id);
-            //        if (!deleted) return TypedResults.NotFound();
+            categoryGroup.MapDelete("/{id:int}",
+                async Task<Results<NoContent, NotFound, BadRequest, Conflict<object>>> (
+                int id,
+                ICategoryRepository repo) =>
+                {
+                    if (id <= 0) return TypedResults.BadRequest();
 
-            //        return TypedResults.NoContent();
-            //    })
-            //    .Produces(StatusCodes.Status500InternalServerError);
+                    try
+                    {
+                        bool deleted = await repo.DeleteAsync(id);
+                        if (!deleted) return TypedResults.NotFound();
+                        return TypedResults.NoContent();
+                    }
+                    catch (CannotDeleteException e)
+                    {
+                        return TypedResults.Conflict<object>(new { conflict = e.Message });
+                    }
+                    catch (DbUpdateException)
+                    {
+                        throw;
+                    }
+                });
         }
-
     }
 }
