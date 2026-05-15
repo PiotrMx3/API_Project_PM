@@ -23,6 +23,6 @@ namespace API_Project_PM.Core.Database
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDBContext).Assembly);
         }
-    
+
     }
 }

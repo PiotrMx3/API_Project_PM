@@ -1,4 +1,5 @@
 using API_Project_PM.Core.Database;
+using API_Project_PM.Core.Database.Seed;
 using API_Project_PM.Core.Services.Categories;
 using API_Project_PM.Core.Services.Locations;
 using API_Project_PM.Core.Services.Parts;
@@ -20,10 +21,19 @@ namespace API_Project_PM
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<AppDBContext>(options =>
-                options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
-            );
+
+            if (builder.Environment.IsStaging())
+            {
+                builder.Services.AddDbContext<AppDBContext>(options =>
+                options.UseInMemoryDatabase("InMemoryDb"));
+            }
+            else
+            {
+                builder.Services.AddDbContext<AppDBContext>(options =>
+                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+                );
+            }
 
             var autoMapperKey = builder.Configuration["AutoMapperSettings:LicenseKey"];
 
@@ -88,8 +98,17 @@ namespace API_Project_PM
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
             {
+                // Manually scoped service 
+                using (var scope = app.Services.CreateScope())
+                {
+                    AppDBContext context = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+                    context.Database.EnsureDeleted();
+                    context.Database.EnsureCreated();
+                    DatabaseSeeder.Seed(context);
+                }
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
