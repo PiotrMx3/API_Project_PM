@@ -25,14 +25,14 @@ namespace API_Project_PM
             if (builder.Environment.IsStaging())
             {
                 builder.Services.AddDbContext<AppDBContext>(options =>
-                options.UseInMemoryDatabase("InMemoryDb"));
+                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+                );
             }
             else
             {
                 builder.Services.AddDbContext<AppDBContext>(options =>
-                    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
-                );
+                options.UseInMemoryDatabase("InMemoryDb"));
             }
 
             var autoMapperKey = builder.Configuration["AutoMapperSettings:LicenseKey"];
